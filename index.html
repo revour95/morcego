@@ -26,10 +26,12 @@
     width:56px;
     height:56px;
     transform:translate(-50%,-50%);
-    z-index:45;
+    z-index:999; /* bem acima do canvas */
     pointer-events:none;
     left:50%;
     top:50%;
+    will-change: transform;
+    -webkit-transform:translate(-50%,-50%);
   }
   .bat{
     width:56px;
@@ -40,9 +42,11 @@
     position:relative;
     pointer-events:none;
     image-rendering: pixelated;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 
-  /* Our pixel SVGs fill the box and scale crisply */
+  /* pixel SVG frames: absolute stack */
   .bat svg{
     width:100%;
     height:100%;
@@ -50,22 +54,12 @@
     shape-rendering: crispEdges;
     image-rendering: -moz-crisp-edges;
     image-rendering: pixelated;
+    position:absolute;
+    inset:0;
   }
-  .bat .frame{ position:absolute; inset:0; width:100%; height:100%; }
-
-  /* flap animation: alternate two frames */
-  @keyframes flap {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  @keyframes flapInv {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-  .bat .frame.f1{ animation: flap 380ms steps(1) infinite; }
-  .bat .frame.f2{ animation: flapInv 380ms steps(1) infinite; }
+  /* ensure one frame visible by default, the other hidden — JS will toggle */
+  .bat svg.f1{ display:block; opacity:1; }
+  .bat svg.f2{ display:none; opacity:0; }
 
   /* Controls */
   #controls{
@@ -102,7 +96,7 @@
 
   /* Final overlay */
   #endOverlay {
-    position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:9999;
+    position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:1000;
     display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px; box-sizing:border-box;
     background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(10,0,0,0.97)); text-align:center;
   }
@@ -122,8 +116,8 @@
     #endOverlay h1{font-size:32px}
   }
 
-  /* On final screen, enlarge the bat clone */
-  .bat.still svg{ width:320px; height:320px; }
+  /* scale bigger in final overlay */
+  .bat.still svg{ width:320px; height:320px; position:static; display:inline-block; }
 </style>
 </head>
 <body>
@@ -135,32 +129,31 @@
     <!-- bat sprite container -->
     <div class="bat-container" id="batContainer">
       <div class="bat" id="batSprite" aria-hidden="true">
-        <!-- FRAME 1: asas abaixadas (pixel-art 16x16) -->
+        <!-- FRAME 1: asas abaixadas (pixel 16x16) -->
         <svg class="frame f1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-          <!-- outline / wings (cinza) -->
+          <!-- left wing top -->
           <rect x="0" y="6" width="1" height="1" fill="#6b6d7b"/>
           <rect x="1" y="5" width="1" height="1" fill="#6b6d7b"/>
           <rect x="2" y="4" width="1" height="1" fill="#6b6d7b"/>
           <rect x="3" y="3" width="1" height="1" fill="#6b6d7b"/>
+          <!-- right wing top -->
           <rect x="13" y="3" width="1" height="1" fill="#6b6d7b"/>
           <rect x="14" y="4" width="1" height="1" fill="#6b6d7b"/>
           <rect x="15" y="5" width="1" height="1" fill="#6b6d7b"/>
           <rect x="15" y="7" width="1" height="1" fill="#6b6d7b"/>
           <rect x="0" y="7" width="1" height="1" fill="#6b6d7b"/>
-
           <!-- wing dark fills -->
-          <rect x="1" y="7" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="2" y="7" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="3" y="7" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="4" y="6" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="4" y="8" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="11" y="7" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="12" y="7" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="13" y="7" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="11" y="5" width="1" height="1" fill="#1b1b1b"/>
-
+          <rect x="1" y="7" width="1" height="1" fill="#111"/>
+          <rect x="2" y="7" width="1" height="1" fill="#111"/>
+          <rect x="3" y="7" width="1" height="1" fill="#111"/>
+          <rect x="4" y="6" width="1" height="1" fill="#111"/>
+          <rect x="4" y="8" width="1" height="1" fill="#111"/>
+          <rect x="11" y="7" width="1" height="1" fill="#111"/>
+          <rect x="12" y="7" width="1" height="1" fill="#111"/>
+          <rect x="13" y="7" width="1" height="1" fill="#111"/>
+          <rect x="11" y="5" width="1" height="1" fill="#111"/>
           <!-- central body -->
-          <rect x="5" y="4" width="6" height="6" fill="#111"/>
+          <rect x="5" y="4" width="6" height="6" fill="#0f0f0f"/>
           <!-- eyes -->
           <rect x="6" y="5" width="1" height="1" fill="#fff"/>
           <rect x="8" y="5" width="1" height="1" fill="#fff"/>
@@ -171,33 +164,30 @@
           <rect x="10" y="10" width="1" height="1" fill="#222"/>
         </svg>
 
-        <!-- FRAME 2: asas levantadas (pixel-art 16x16) -->
+        <!-- FRAME 2: asas levantadas -->
         <svg class="frame f2" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
           <!-- outline top -->
           <rect x="3" y="1" width="1" height="1" fill="#6b6d7b"/>
           <rect x="4" y="1" width="1" height="1" fill="#6b6d7b"/>
           <rect x="11" y="1" width="1" height="1" fill="#6b6d7b"/>
           <rect x="12" y="1" width="1" height="1" fill="#6b6d7b"/>
-
           <!-- wing dark top arcs -->
-          <rect x="2" y="2" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="1" y="3" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="0" y="4" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="14" y="4" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="15" y="3" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="13" y="2" width="1" height="1" fill="#1b1b1b"/>
-
+          <rect x="2" y="2" width="1" height="1" fill="#111"/>
+          <rect x="1" y="3" width="1" height="1" fill="#111"/>
+          <rect x="0" y="4" width="1" height="1" fill="#111"/>
+          <rect x="14" y="4" width="1" height="1" fill="#111"/>
+          <rect x="15" y="3" width="1" height="1" fill="#111"/>
+          <rect x="13" y="2" width="1" height="1" fill="#111"/>
           <!-- central body -->
-          <rect x="5" y="6" width="6" height="5" fill="#111"/>
+          <rect x="5" y="6" width="6" height="5" fill="#0f0f0f"/>
           <!-- eyes slightly lower -->
           <rect x="6" y="7" width="1" height="1" fill="#fff"/>
           <rect x="8" y="7" width="1" height="1" fill="#fff"/>
-
           <!-- extra wing pieces -->
           <rect x="3" y="5" width="1" height="1" fill="#2a2a2a"/>
           <rect x="12" y="5" width="1" height="1" fill="#2a2a2a"/>
-          <rect x="2" y="6" width="1" height="1" fill="#1b1b1b"/>
-          <rect x="13" y="6" width="1" height="1" fill="#1b1b1b"/>
+          <rect x="2" y="6" width="1" height="1" fill="#111"/>
+          <rect x="13" y="6" width="1" height="1" fill="#111"/>
         </svg>
       </div>
     </div>
@@ -247,13 +237,27 @@ const finalHolder = document.getElementById('finalBatHolder');
 targetLabel.textContent = TARGET;
 
 let W=0,H=0;
-function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+function resize(){ 
+  // Set canvas CSS size to viewport, and internal buffer to device pixels for crispness
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.style.width = vw + 'px';
+  canvas.style.height = vh + 'px';
+  canvas.width = Math.round(vw * dpr);
+  canvas.height = Math.round(vh * dpr);
+  W = vw; H = vh;
+}
 window.addEventListener('resize', ()=>{ resize(); setTimeout(()=>resize(),50); });
 resize();
 
 /* player */
 const bat = { x: W/2, y: H*0.7, w:56, h:56, speed:320 };
-function updateBatPosition(){ batContainer.style.left = bat.x + 'px'; batContainer.style.top  = bat.y + 'px'; }
+function updateBatPosition(){ 
+  // Update the container position (pixel-based)
+  batContainer.style.left = bat.x + 'px'; 
+  batContainer.style.top  = bat.y + 'px'; 
+}
 updateBatPosition();
 
 /* controls */
@@ -297,6 +301,32 @@ potatoImg.onerror = ()=>{ potatoImgLoaded = false; }
 let potatoes = [], lastSpawn = 0, score = 0, running = false, lastTime = 0;
 function spawnPotato(){ const size = POTATO_SIZE * (0.9 + Math.random()*0.2); potatoes.push({ x: Math.random()*(W-size), y: -size, vy: 120 + Math.random()*120, size }); }
 
+/* JS flap (toggle frames) - reliable on mobile */
+(function setupFlap(){
+  const f1 = batSprite.querySelector('svg.f1');
+  const f2 = batSprite.querySelector('svg.f2');
+  if(!f1 || !f2) return;
+  // ensure initial visible state
+  f1.style.display = 'block';
+  f2.style.display = 'none';
+  let showFirst = false;
+  // toggle at ~380ms to mimic earlier timing
+  setInterval(()=>{
+    showFirst = !showFirst;
+    if(showFirst){
+      f1.style.display = 'block';
+      f2.style.display = 'none';
+      f1.style.opacity = '1';
+      f2.style.opacity = '0';
+    } else {
+      f1.style.display = 'none';
+      f2.style.display = 'block';
+      f1.style.opacity = '0';
+      f2.style.opacity = '1';
+    }
+  }, 380);
+})();
+
 function step(ts){
   if(!running) return;
   if(!lastTime) lastTime = ts;
@@ -314,6 +344,10 @@ function step(ts){
 
   if(performance.now() - lastSpawn > SPAWN_INTERVAL){ lastSpawn = performance.now(); spawnPotato(); }
 
+  // draw potatoes
+  // scale drawing to devicePixelRatio for crispness
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,W,H);
   for(let i=potatoes.length-1;i>=0;i--){
     const p = potatoes[i];
@@ -356,7 +390,8 @@ function startGame(){ score = 0; scoreEl.textContent = 0; potatoes = []; lastSpa
 
 function endGame(){
   running = false;
-  ctx.clearRect(0,0,W,H);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   potatoes = [];
   document.getElementById('game').style.display = 'none';
   document.getElementById('controls').style.display = 'none';
@@ -366,9 +401,9 @@ function endGame(){
   finalHolder.innerHTML = '';
   const spriteClone = batSprite.cloneNode(true);
   spriteClone.classList.add('still');
-  // ensure the cloned SVG scales nicely in final overlay:
+  // ensure the cloned SVGs scale
   const svgElems = spriteClone.querySelectorAll('svg');
-  svgElems.forEach(s => { s.setAttribute('width','320'); s.setAttribute('height','320'); });
+  svgElems.forEach(s => { s.setAttribute('width','320'); s.setAttribute('height','320'); s.style.position = 'static'; s.style.display = 'inline-block'; });
   const wrap = document.createElement('div');
   wrap.style.width = '320px';
   wrap.style.height = '320px';
