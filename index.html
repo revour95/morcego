@@ -11,6 +11,7 @@
     --accent:#c51b1b;
     --text:#fff;
     --muted:#54556b;
+    --heart:#e84c4c;
   }
   html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:'Cinzel',serif;-webkit-tap-highlight-color:transparent}
   #game-wrap{position:relative;width:100vw;height:100vh;overflow:hidden;touch-action:none}
@@ -103,6 +104,10 @@
   #endOverlay.show { display:flex; }
   #endOverlay h1{ font-family:'UnifrakturCook',cursive;color:var(--accent);font-size:40px;margin:6px 0;text-shadow:0 6px 18px rgba(0,0,0,0.9) }
   #finalBatHolder{ margin-top:18px; display:flex; align-items:center; justify-content:center; }
+  /* row with bat and heart */
+  .final-row{ display:flex; align-items:center; justify-content:center; gap:18px; }
+  .heart-wrap{ width:120px; height:120px; display:flex; align-items:center; justify-content:center; }
+  .heart-svg{ width:100px; height:100px; filter: drop-shadow(0 8px 18px rgba(232,76,76,0.12)); }
 
   .hidden-during-end { display:none !important; }
 
@@ -114,6 +119,8 @@
     #hud{font-size:22px}
     #hud .count{font-size:16px}
     #endOverlay h1{font-size:32px}
+    .heart-wrap{ width:84px; height:84px; }
+    .heart-svg{ width:68px; height:68px; }
   }
 
   /* scale bigger in final overlay */
@@ -205,7 +212,7 @@
     <!-- start overlay -->
     <div id="overlay" class="overlay">
       <h1>morceguinho</h1>
-      <p>Use os botões de setinha (cima / baixo / esquerda / direita) para controlar o morcego.<br>Pegue <strong id="targetLabel">10</strong> batatas-doce.</p>
+      <p>Use os botões de setinha (cima / baixo / esquerda / direita) para controlar o morcego.<br>Pegue <strong id="targetLabel">20</strong> batatas-doce.</p>
       <button id="startBtn" class="btn-primary">COMEÇAR</button>
     </div>
 
@@ -218,7 +225,7 @@
 
 <script>
 /* CONFIG */
-const TARGET = 10;
+const TARGET = 20;
 const SPAWN_INTERVAL = 800;
 const GAME_SPEED = 1;
 const POTATO_SIZE = 64;
@@ -404,14 +411,43 @@ function endGame(){
   // ensure the cloned SVGs scale
   const svgElems = spriteClone.querySelectorAll('svg');
   svgElems.forEach(s => { s.setAttribute('width','320'); s.setAttribute('height','320'); s.style.position = 'static'; s.style.display = 'inline-block'; });
-  const wrap = document.createElement('div');
-  wrap.style.width = '320px';
-  wrap.style.height = '320px';
-  wrap.style.display = 'flex';
-  wrap.style.alignItems = 'center';
-  wrap.style.justifyContent = 'center';
-  wrap.appendChild(spriteClone);
-  finalHolder.appendChild(wrap);
+
+  // create final row with bat + heart
+  const finalRow = document.createElement('div');
+  finalRow.className = 'final-row';
+
+  // bat wrapper
+  const batWrap = document.createElement('div');
+  batWrap.style.width = '320px';
+  batWrap.style.height = '320px';
+  batWrap.style.display = 'flex';
+  batWrap.style.alignItems = 'center';
+  batWrap.style.justifyContent = 'center';
+  batWrap.appendChild(spriteClone);
+
+  // heart wrapper (inline SVG)
+  const heartWrap = document.createElement('div');
+  heartWrap.className = 'heart-wrap';
+  heartWrap.setAttribute('aria-hidden','false');
+  const heartSvg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  heartSvg.setAttribute('viewBox','0 0 24 24');
+  heartSvg.setAttribute('class','heart-svg');
+  heartSvg.setAttribute('role','img');
+  heartSvg.setAttribute('aria-label','coração');
+  heartSvg.innerHTML = `
+    <defs>
+      <filter id="hShadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#e84c4c" flood-opacity="0.12"/>
+      </filter>
+    </defs>
+    <path d="M12 21s-7.5-4.8-9.1-7.1C0.9 10.8 3 7 6.7 7c1.9 0 3.1 1.1 3.3 1.3.2-.2 1.5-1.3 3.3-1.3 3.7 0 5.8 3.8 3.8 6.9C19.6 16.2 12 21 12 21z" fill="var(--heart)" filter="url(#hShadow)"/>
+  `;
+  heartWrap.appendChild(heartSvg);
+
+  // append to final row
+  finalRow.appendChild(batWrap);
+  finalRow.appendChild(heartWrap);
+  finalHolder.appendChild(finalRow);
 
   endOverlay.classList.add('show');
   endOverlay.setAttribute('aria-hidden','false');
