@@ -113,7 +113,7 @@
     <!-- bat sprite container -->
     <div class="bat-container" id="batContainer">
       <div class="bat" id="batSprite">
-        <!-- replaced inline SVG with the compiled pixel bat -->
+        <!-- compiled pixel bat -->
         <div class="bat-pixel" aria-hidden="true"></div>
       </div>
     </div>
@@ -287,9 +287,9 @@ function endGame(){
   // handle pixel bat if present
   const bp = spriteClone.querySelector('.bat-pixel');
   if(bp){
-    bp.style.transform = 'scale(8)';
-    bp.style.left = '-256px';
-    bp.style.top = '-256px';
+    bp.style.transform = 'translate(-50%, -50%) scale(8)';
+    bp.style.left = '50%';
+    bp.style.top = '50%';
     bp.style.animationPlayState = 'paused';
   }
   const wrap = document.createElement('div');
@@ -312,6 +312,7 @@ document.getElementById('game-wrap').addEventListener('touchmove', e=>{ e.preven
 window.addEventListener('load', ()=>{ resize(); bat.x = window.innerWidth/2; bat.y = window.innerHeight*0.7; updateBatPosition(); });
 </script>
 
+
 <!-- appended compiled bat CSS -->
 <style>
 /* SCSS Vars
@@ -326,8 +327,14 @@ window.addEventListener('load', ()=>{ resize(); bat.x = window.innerWidth/2; bat
 /* 2 */
 /* 3 */
 /* Scaffolding */
-
-
+html, body {
+  height: 100%;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 /* Bat */
 .bat-pixel {
   width: 1px;
@@ -367,19 +374,22 @@ window.addEventListener('load', ()=>{ resize(); bat.x = window.innerWidth/2; bat
 }
 
 
-/* Integration tweaks for game:
-   - .bat-pixel is used inside your existing .bat element (#batSprite),
-     so it won't clash with the game layout.
-   - .bat.still .bat-pixel scales & pauses for the final overlay.
-*/
-.bat-pixel{
-  image-rendering: pixelated;
-  pointer-events: none;
+/* Integration overrides to ensure the sprite is centered inside the 56x56 .bat box */
+.bat { position: relative; overflow: visible; }
+.bat-pixel {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) scale(4) !important;
+  transform-origin: center center !important;
+  image-rendering: pixelated !important;
+  pointer-events: none !important;
+  width: auto !important;
+  height: auto !important;
 }
+/* Final-screen variant: larger and paused */
 .bat.still .bat-pixel{
-  transform: scale(8) !important;
-  left: -256px !important;
-  top: -256px !important;
+  transform: translate(-50%, -50%) scale(8) !important;
   animation-play-state: paused !important;
 }
 
