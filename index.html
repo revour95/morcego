@@ -1,80 +1,95 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Morceguinho & Batatas - jogo mobile</title>
-  <!-- Fontes góticas do Google (substitua se quiser outras) -->
-  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:ital@0;1&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* ========= Tema gótico: preto, vermelho e branco (texto) ========= */
-    :root{
-      --bg:#000;
-      --accent:#c51b1b; /* vermelho principal */
-      --text:#fff;
-      --muted:#54556b;
-      --batbody:#202020;
-    }
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:'Cinzel',serif}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Morceguinho & Batatas</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:ital@0;1&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000;
+    --accent:#c51b1b;
+    --text:#fff;
+    --muted:#54556b;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:'Cinzel',serif}
+  #game-wrap{position:relative;width:100vw;height:100vh;overflow:hidden;touch-action:none}
+  canvas#game{display:block;background:linear-gradient(180deg,#050505 0%, #0b0b0b 100%);width:100%;height:100%}
 
-    /* Container do jogo */
-    #game-wrap{position:relative;width:100vw;height:100vh;overflow:hidden;touch-action:none}
-    canvas#game{display:block;background:linear-gradient(180deg,#050505 0%, #0b0b0b 100%);width:100%;height:100%}
+  /* HUD */
+  #hud{position:absolute;left:12px;top:12px;z-index:40;font-family:'UnifrakturCook',cursive;font-size:20px;color:var(--text);text-shadow:0 2px 0 rgba(0,0,0,.6);}
+  #hud .count{display:inline-block;padding:6px 10px;border-radius:8px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.12);}
 
-    /* HUD: score no canto superior */
-    #hud{position:absolute;left:14px;top:12px;z-index:40;font-family:'UnifrakturCook',cursive;font-size:20px;color:var(--text);text-shadow:0 2px 0 rgba(0,0,0,.6);}
-    #hud .count{display:inline-block;padding:6px 10px;border-radius:8px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.12);}
+  /* Bat container e sprite (ajustes para mobile) */
+  .bat-container{
+    position:absolute;
+    width:48px;
+    height:48px;
+    transform:translate(-50%,-50%);
+    z-index:45;
+    pointer-events:none;
+  }
+  /* sprite adaptado: diminuí escala e corrigi offsets */
+  .bat{
+    width:1px;height:1px;position:relative;
+    left:-64px; top:-64px;
+    transform:scale(2);
+    animation:.6s steps(2) infinite;
+    image-rendering: pixelated;
+  }
+  .bat.still{animation:none}
 
-    /* Controles (setinhas) */
-    #controls{position:absolute;left:50%;transform:translateX(-50%);bottom:18px;z-index:50;display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,64px);gap:8px}
-    .ctrl-btn{width:64px;height:64px;border-radius:12px;background:rgba(255,255,255,0.03);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.04);}
-    .ctrl-btn:active{transform:scale(.98)}
-    .ctrl-btn .arrow{font-size:28px;color:var(--text);font-weight:700;font-family:'Cinzel',serif;text-shadow:0 2px 0 rgba(0,0,0,.6)}
-    /* colocar botões invisíveis onde não uso setinha (esq-sd) */
-    #btn-empty{visibility:hidden}
+  /* Controles reorganizados: D-pad em grid, deslocados para cima para não encostar na barra do SO */
+  #controls{
+    position:absolute;
+    left:18px;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    z-index:50;
+    display:grid;
+    grid-template-columns:repeat(3,56px);
+    grid-template-rows:repeat(3,56px);
+    gap:10px;
+    grid-template-areas:
+      ". up ."
+      "left down right"
+      ". . .";
+  }
+  #btn-up{grid-area:up}
+  #btn-left{grid-area:left}
+  #btn-down{grid-area:down}
+  #btn-right{grid-area:right}
 
-    /* Overlay de instruções e final */
-    .overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;max-width:92vw;padding:18px;border-radius:16px;background:linear-gradient(180deg, rgba(0,0,0,0.75), rgba(10,0,0,0.6));border:2px solid rgba(197,27,27,0.25);box-shadow:0 10px 40px rgba(0,0,0,0.7);text-align:center}
-    .overlay h1{font-family:'UnifrakturCook',cursive;color:var(--accent);font-size:36px;margin:6px 0;text-shadow:0 2px 0 #000}
-    .overlay p{color:var(--text);font-size:16px;margin:6px 0;line-height:1.3}
-    .btn-primary{margin-top:12px;padding:10px 16px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-weight:700;font-family:'Cinzel',serif}
-    .hidden{display:none}
+  .ctrl-btn{width:56px;height:56px;border-radius:12px;background:rgba(255,255,255,0.03);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.04);user-select:none}
+  .ctrl-btn:active{transform:scale(.98)}
+  .ctrl-btn .arrow{font-size:22px;color:var(--text);font-weight:700;font-family:'Cinzel',serif;text-shadow:0 2px 0 rgba(0,0,0,.6)}
 
-    /* Estilização final grande (gótico) */
-    .glow-text{font-family:'UnifrakturCook',cursive;color:var(--text);font-size:28px;text-shadow:0 0 8px rgba(197,27,27,0.6),0 8px 30px rgba(0,0,0,0.9)}
+  /* Esconde espaços vazios */
+  #btn-empty, #btn-empty2 {display:none}
 
-    /* --- Bat (usando o CSS do CodePen como sprite via box-shadow). 
-       Mantivemos a animação original e colocamos dentro de um container para mover com JS. --- */
-    .bat-container{position:absolute;left:50%;top:50%;width:64px;height:64px;transform:translate(-50%,-50%);z-index:45;pointer-events:none}
-    .bat{width:1px;height:1px;position:relative;left:-128px;top:-128px;transform:scale(4);animation:.4s bat steps(1) infinite}
+  /* Overlay minimalista */
+  .overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;max-width:92vw;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(0,0,0,0.75), rgba(10,0,0,0.6));border:2px solid rgba(197,27,27,0.25);text-align:center}
+  .overlay h1{font-family:'UnifrakturCook',cursive;color:var(--accent);font-size:34px;margin:6px 0}
+  .overlay p{color:var(--text);font-size:16px;margin:6px 0}
+  .btn-primary{margin-top:12px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-weight:700;font-family:'Cinzel',serif}
+  .hidden{display:none}
 
-    /* substituímos as variáveis do pen por valores diretos (cores e velocidade) */
-    @keyframes bat{
-      0% {box-shadow:33px 6px #54556b,34px 6px #54556b,35px 6px #54556b,36px 6px #54556b,20px 7px #54556b,21px 7px #54556b,22px 7px #54556b,23px 7px #54556b,33px 7px #54556b,34px 7px #54556b,35px 7px #202020,36px 7px #202020,37px 7px #54556b,38px 7px #54556b,39px 7px #54556b,43px 7px #54556b,20px 8px #54556b,21px 8px #54556b,22px 8px #54556b,23px 8px #54556b,33px 8px #54556b,34px 8px #54556b,35px 8px #202020,36px 8px #202020,37px 8px #54556b,38px 8px #54556b,39px 8px #54556b,43px 8px #54556b,17px 9px #54556b,18px 9px #54556b,19px 9px #54556b,20px 9px #54556b,35px 9px #54556b,36px 9px #202020,37px 9px #202020,38px 9px #202020,39px 9px #202020,40px 9px #54556b,41px 9px #54556b,42px 9px #54556b,43px 9px #202020,44px 9px #54556b,45px 9px #54556b,16px 10px #54556b,17px 10px #202020,18px 10px #202020,19px 10px #202020,20px 10px #54556b,36px 10px #54556b,37px 10px #202020,38px 10px #202020,39px 10px #202020,40px 10px #202020,41px 10px #202020,42px 10px #202020,43px 10px #202020,44px 10px #54556b,45px 10px #54556b,16px 11px #54556b,17px 11px #202020,18px 11px #202020,19px 11px #202020,20px 11px #54556b,36px 11px #54556b,37px 11px #202020,38px 11px #202020,39px 11px #202020,40px 11px #202020,41px 11px #202020,42px 11px #202020,43px 11px #202020,44px 11px #54556b,45px 11px #54556b,13px 12px #54556b,14px 12px #54556b,15px 12px #54556b,16px 12px #202020,17px 12px #202020,18px 12px #54556b,19px 12px #54556b,20px 12px #54556b,36px 12px #54556b,37px 12px #54556b,38px 12px #54556b,39px 12px #202020,40px 12px #202020,41px 12px #202020,42px 12px #202020,43px 12px #202020,44px 12px #54556b,45px 12px #54556b,12px 13px #54556b,13px 13px #202020,14px 13px #202020,15px 13px #202020,16px 13px #202020,17px 13px #202020,18px 13px #54556b,19px 13px #54556b,37px 13px #54556b,38px 13px #54556b,39px 13px #202020,40px 13px #202020,41px 13px #202020,42px 13px #202020,43px 13px #202020,44px 13px #202020,45px 13px #202020,46px 13px #54556b,10px 14px #54556b,11px 14px #54556b,12px 14px #202020,13px 14px #202020,14px 14px #202020,15px 14px #202020,16px 14px #202020,17px 14px #54556b,36px 14px #54556b,37px 14px #54556b,38px 14px #54556b,39px 14px #202020,40px 14px #202020,41px 14px #202020,42px 14px #202020,43px 14px #202020,44px 14px #202020,45px 14px #202020,46px 14px #202020,47px 14px #54556b,10px 15px #54556b,11px 15px #54556b,12px 15px #202020,13px 15px #202020,14px 15px #202020,15px 15px #202020,16px 15px #202020,17px 15px #54556b,36px 15px #54556b,37px 15px #54556b,38px 15px #54556b,39px 15px #202020,40px 15px #202020,41px 15px #202020,42px 15px #202020,43px 15px #202020,44px 15px #202020,45px 15px #202020,46px 15px #202020,47px 15px #54556b,10px 16px #54556b,11px 16px #54556b,12px 16px #202020,13px 16px #202020,14px 16px #202020,15px 16px #202020,16px 16px #202020,17px 16px #54556b,35px 16px #54556b,36px 16px #54556b,37px 16px #202020,38px 16px #202020,39px 16px #202020,40px 16px #202020,41px 16px #202020,42px 16px #202020,43px 16px #202020,44px 16px #202020,45px 16px #202020,46px 16px #202020,47px 16px #54556b,9px 17px #54556b,10px 17px #202020,11px 17px #202020,12px 17px #202020,13px 17px #202020,14px 17px #202020,15px 17px #202020,16px 17px #202020,17px 17px #54556b,37px 17px #54556b,38px 17px #54556b,39px 17px #202020,40px 17px #202020,41px 17px #202020,42px 17px #202020,43px 17px #202020,44px 17px #202020,45px 17px #202020,46px 17px #202020,47px 17px #202020,48px 17px #54556b,49px 17px #54556b,51px 17px #54556b,7px 18px #54556b,8px 18px #54556b,9px 18px #54556b,10px 18px #202020,11px 18px #202020,12px 18px #202020,13px 18px #202020,14px 18px #202020,15px 18px #202020,16px 18px #202020,17px 18px #54556b,20px 18px #54556b,37px 18px #54556b,38px 18px #54556b,39px 18px #202020,40px 18px #202020,41px 18px #202020,42px 18px #202020,43px 18px #202020,44px 18px #202020,45px 18px #202020,46px 18px #202020,47px 18px #202020,48px 18px #54556b,49px 18px #54556b,51px 18px #202020,7px 19px #54556b,8px 19px #54556b,9px 19px #54556b,10px 19px #202020,11px 19px #202020,12px 19px #202020,13px 19px #202020,14px 19px #202020,15px 19px #202020,16px 19px #202020,17px 19px #54556b,20px 19px #54556b,37px 19px #54556b,38px 19px #54556b,39px 19px #202020,40px 19px #202020,41px 19px #202020,42px 19px #202020,43px 19px #202020,44px 19px #202020,45px 19px #202020,46px 19px #202020,47px 19px #202020,48px 19px #54556b,49px 19px #54556b,51px 19px #202020,7px 20px #54556b,8px 20px #54556b,9px 20px #202020,10px 20px #202020,11px 20px #202020,12px 20px #202020,13px 20px #202020,14px 20px #202020,15px 20px #202020,16px 20px #202020,17px 20px #202020,18px 20px #54556b,19px 20px #54556b,20px 20px #202020,21px 20px #54556b,36px 20px #54556b,37px 20px #202020,38px 20px #202020,39px 20px #202020,40px 20px #202020,41px 20px #202020,42px 20px #202020,43px 20px #202020,44px 20px #202020,45px 20px #202020,46px 20px #202020,47px 20px #202020,48px 20px #54556b,49px 20px #54556b,54px 20px #54556b,55px 20px #54556b,9px 21px #54556b,10px 21px #202020,11px 21px #202020,12px 21px #202020,13px 21px #202020,14px 21px #202020,15px 21px #202020,16px 21px #202020,17px 21px #202020,18px 21px #202020,19px 21px #202020,20px 21px #202020,21px 21px #54556b,35px 21px #54556b,36px 21px #54556b,37px 21px #202020,38px 21px #202020,39px 21px #202020,40px 21px #202020,41px 21px #202020,42px 21px #202020,43px 21px #202020,44px 21px #202020,45px 21px #202020,46px 21px #202020,47px 21px #202020,48px 21px #54556b,49px 21px #54556b,52px 21px #54556b,53px 21px #54556b,54px 21px #202020,55px 21px #202020,56px 21px #54556b,57px 21px #54556b,9px 22px #54556b,10px 22px #202020,11px 22px #202020,12px 22px #202020,13px 22px #202020,14px 22px #202020,15px 22px #202020,16px 22px #202020,17px 22px #202020,18px 22px #202020,19px 22px #202020,20px 22px #54556b,32px 22px #54556b,33px 22px #54556b,34px 22px #54556b,35px 22px #202020,36px 22px #202020,37px 22px #202020,38px 22px #202020,39px 22px #202020,40px 22px #202020,41px 22px #202020,42px 22px #202020,43px 22px #202020,44px 22px #202020,45px 22px #202020,46px 22px #202020,47px 22px #54556b,48px 22px #54556b,49px 22px #54556b,50px 22px #54556b,52px 22px #54556b,53px 22px #54556b,54px 22px #202020,55px 22px #202020,56px 22px #54556b,57px 22px #54556b,9px 23px #54556b,10px 23px #202020,11px 23px #202020,12px 23px #202020,13px 23px #202020,14px 23px #202020,15px 23px #202020,16px 23px #202020,17px 23px #202020,18px 23px #202020,19px 23px #202020,20px 23px #54556b,32px 23px #54556b,33px 23px #54556b,34px 23px #54556b,35px 23px #202020,36px 23px #202020,37px 23px #202020,38px 23px #202020,39px 23px #202020,40px 23px #202020,41px 23px #202020,42px 23px #202020,43px 23px #202020,44px 23px #202020,45px 23px #202020,46px 23px #202020,47px 23px #54556b,48px 23px #54556b,49px 23px #54556b,50px 23px #54556b,52px 23px #54556b,53px 23px #54556b,54px 23px #202020,55px 23px #202020,56px 23px #54556b,57px 23px #54556b,9px 24px #54556b,10px 24px #202020,11px 24px #202020,12px 24px #202020,13px 24px #202020,14px 24px #202020,15px 24px #202020,16px 24px #202020,17px 24px #202020,18px 24px #54556b,19px 24px #54556b,32px 24px #54556b,33px 24px #202020,34px 24px #202020,35px 24px #202020,36px 24px #202020,37px 24px #202020,38px 24px #202020,39px 24px #202020,40px 24px #202020,41px 24px #202020,42px 24px #202020,43px 24px #202020,44px 24px #202020,45px 24px #202020,46px 24px #202020,47px 24px #54556b,48px 24px #202020,49px 24px #202020,50px 24px #54556b,54px 24px #54556b,55px 24px #54556b,7px 25px #54556b,8px 25px #54556b,9px 25px #202020,10px 25px #202020,11px 25px #202020,12px 25px #202020,13px 25px #202020,14px 25px #202020,15px 25px #202020,16px 25px #202020,17px 25px #202020,18px 25px #54556b,19px 25px #54556b,21px 25px #54556b,28px 25px #54556b,33px 25px #54556b,34px 25px #54556b,35px 25px #202020,36px 25px #202020,37px 25px #202020,38px 25px #202020,39px 25px #202020,40px 25px #202020,41px 25px #202020,42px 25px #202020,43px 25px #202020,44px 25px #202020,45px 25px #202020,46px 25px #202020,47px 25px #202020,48px 25px #202020,49px 25px #202020,50px 25px #54556b,54px 25px #202020,7px 26px #54556b,8px 26px #54556b,9px 26px #202020,10px 26px #202020,11px 26px #202020,12px 26px #202020,13px 26px #202020,14px 26px #202020,15px 26px #202020,16px 26px #202020,17px 26px #202020,18px 26px #54556b,19px 26px #54556b,21px 26px #54556b,28px 26px #54556b,33px 26px #54556b,34px 26px #54556b,35px 26px #202020,36px 26px #202020,37px 26px #202020,38px 26px #202020,39px 26px #202020,40px 26px #202020,41px 26px #202020,42px 26px #202020,43px 26px #202020,44px 26px #202020,45px 26px #202020,46px 26px #202020,47px 26px #202020,48px 26px #202020,49px 26px #202020,50px 26px #54556b,54px 26px #202020,3px 27px #54556b,4px 27px #54556b,5px 27px #54556b,9px 27px #54556b,10px 27px #202020,11px 27px #202020,12px 27px #202020,13px 27px #202020,14px 27px #202020,15px 27px #202020,16px 27px #202020,17px 27px #54556b,20px 27px #54556b,21px 27px #202020,22px 27px #54556b,23px 27px #54556b,27px 27px #54556b,28px 27px #202020,35px 27px #54556b,36px 27px #202020,37px 27px #202020,38px 27px #202020,39px 27px #202020,40px 27px #202020,41px 27px #202020,42px 27px #202020,43px 27px #202020,44px 27px #202020,45px 27px #202020,46px 27px #202020,47px 27px #202020,48px 27px #54556b,49px 27px #54556b,1px 28px #54556b,2px 28px #54556b,3px 28px #202020,4px 28px #202020,5px 28px #202020,6px 28px #54556b,9px 28px #54556b,10px 28px #54556b,11px 28px #54556b,12px 28px #202020,13px 28px #202020,14px 28px #202020,15px 28px #202020,16px 28px #202020,17px 28px #54556b,20px 28px #54556b,21px 28px #202020,22px 28px #54556b,23px 28px #54556b,25px 28px #54556b,26px 28px #54556b,27px 28px #202020,28px 28px #202020,29px 28px #54556b,30px 28px #54556b,33px 28px #54556b,34px 28px #54556b,35px 28px #54556b,36px 28px #202020,37px 28px #202020,38px 28px #202020,39px 28px #202020,40px 28px #202020,41px 28px #202020,42px 28px #202020,43px 28px #202020,44px 28px #202020,45px 28px #202020,46px 28px #202020,47px 28px #202020,48px 28px #54556b,49px 28px #54556b,1px 29px #54556b,2px 29px #54556b,3px 29px #202020,4px 29px #202020,5px 29px #202020,6px 29px #54556b,10px 29px #54556b,11px 29px #54556b,12px 29px #202020,13px 29px #202020,14px 29px #202020,15px 29px #202020,16px 29px #202020,17px 29px #54556b,18px 29px #54556b,19px 29px #54556b,20px 29px #202020,21px 29px #202020,22px 29px #202020,23px 29px #202020,24px 29px #54556b,25px 29px #54556b,26px 29px #54556b,27px 29px #202020,28px 29px #202020,29px 29px #202020,30px 29px #202020,31px 29px #54556b,32px 29px #54556b,33px 29px #54556b,34px 29px #54556b,35px 29px #202020,36px 29px #202020,37px 29px #202020,38px 29px #202020,39px 29px #202020,40px 29px #202020,41px 29px #202020,42px 29px #202020,43px 29px #202020,44px 29px #202020,45px 29px #202020,46px 29px #202020,47px 29px #54556b,52px 29px #54556b,53px 29px #54556b,54px 29px #54556b,1px 30px #54556b,2px 30px #54556b,3px 30px #202020,4px 30px #202020,5px 30px #202020,
-      /* the full long list continues similarly... */
-      }
-      50% { /* mid-frame (simple flip) */ box-shadow: 33px 6px #54556b,34px 6px #54556b,35px 6px #54556b,36px 6px #54556b,20px 7px #54556b,21px 7px #54556b,22px 7px #54556b,23px 7px #54556b,33px 7px #54556b,34px 7px #54556b,35px 7px #202020,36px 7px #202020,37px 7px #54556b,38px 7px #54556b,39px 7px #54556b,43px 7px #54556b; }
-      100% { /* repeat 0% for steps */ box-shadow:33px 6px #54556b,34px 6px #54556b,35px 6px #54556b,36px 6px #54556b,20px 7px #54556b,21px 7px #54556b,22px 7px #54556b,23px 7px #54556b,33px 7px #54556b,34px 7px #54556b,35px 7px #202020,36px 7px #202020,37px 7px #54556b,38px 7px #54556b,39px 7px #54556b,43px 7px #54556b; }
-    }
-
-    /* Quando for a tela final, paramos a animação do morceguinho (classe .still) */
-    .bat.still{animation:none}
-
-    /* Pequena responsividade: reduzir controles em telas pequenas */
-    @media (max-width:420px){#controls{transform:translateX(-50%) scale(.88} .ctrl-btn{width:56px;height:56px}}
-
-  </style>
+  /* Ajustes responsivos */
+  @media (max-width:420px){
+    .bat-container{width:44px;height:44px}
+    .bat{transform:scale(1.9); left:-60px; top:-60px}
+    #controls{left:14px; gap:8px}
+    .ctrl-btn{width:52px;height:52px}
+  }
+</style>
 </head>
 <body>
   <div id="game-wrap">
     <canvas id="game"></canvas>
 
-    <div id="hud"><span class="glow-text">Batatas: </span> <span class="count" id="score">0</span></div>
+    <div id="hud"><span style="font-family:'UnifrakturCook',cursive;font-size:26px">Batatas: </span> <span class="count" id="score">0</span></div>
 
-    <!-- bat: container para posicionar com JS, e dentro o sprite animado -->
     <div class="bat-container" id="batContainer"><div class="bat" id="batSprite"></div></div>
 
-    <!-- controles em formato de grid (setinhas) -->
     <div id="controls">
       <div id="btn-up" class="ctrl-btn"><div class="arrow">▲</div></div>
       <div id="btn-empty" class="ctrl-btn"></div>
@@ -84,233 +99,206 @@
       <div id="btn-empty2" class="ctrl-btn"></div>
     </div>
 
-    <!-- INSTRUÇÕES INICIAIS (resumidas) -->
     <div id="overlay" class="overlay">
       <h1>morceguinho</h1>
-      <p>Use os botões de setinha (cima / baixo / esquerda / direita) para controlar o morcego.<br>      Pegue <strong id="targetLabel">10</strong> batatas-doce.</p>
+      <p>Use os botões de setinha (cima / baixo / esquerda / direita) para controlar o morcego.<br>Pegue <strong id="targetLabel">10</strong> batatas-doce.</p>
       <button id="startBtn" class="btn-primary">COMEÇAR</button>
     </div>
 
-    <!-- TELA FINAL (escondida até o final) -->
     <div id="endOverlay" class="overlay hidden">
       <h1 style="font-size:40px">acredita em mim agora?</h1>
-      <div style="margin-top:16px;margin-bottom:12px;color:var(--text);font-family:'Cinzel',serif">Você pegou <strong id="finalScore">0</strong> batatas.</div>
-      <!-- clonaremos o morcego parado aqui via JS -->
+      <div style="margin-top:12px;color:var(--text);font-family:'Cinzel',serif">Você pegou <strong id="finalScore">0</strong> batatas.</div>
       <div id="finalBatHolder" style="margin-top:10px"></div>
       <button id="replayBtn" class="btn-primary">JOGAR DE NOVO</button>
     </div>
-
   </div>
 
-  <script>
-    /* =================== Configurações =================== */
-    const TARGET = 10; // quantidade necessária para vencer (edite se quiser)
-    const SPAWN_INTERVAL = 800; // ms entre aparecimento
-    const GAME_SPEED = 1; // multiplicador de dificuldade
-    const POTATO_SIZE = 64; // tamanho (px) padrão do sprite (substitua com sua arte)
+<script>
+/* CONFIG */
+const TARGET = 10;
+const SPAWN_INTERVAL = 800;
+const GAME_SPEED = 1;
+const POTATO_SIZE = 64; // você pediu 64x64
 
-    /* =================== Setup básico =================== */
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-    const batContainer = document.getElementById('batContainer');
-    const batSprite = document.getElementById('batSprite');
-    const scoreEl = document.getElementById('score');
-    const overlay = document.getElementById('overlay');
-    const endOverlay = document.getElementById('endOverlay');
-    const startBtn = document.getElementById('startBtn');
-    const targetLabel = document.getElementById('targetLabel');
-    const finalScore = document.getElementById('finalScore');
-    const finalHolder = document.getElementById('finalBatHolder');
+/* SETUP */
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const batContainer = document.getElementById('batContainer');
+const batSprite = document.getElementById('batSprite');
+const scoreEl = document.getElementById('score');
+const overlay = document.getElementById('overlay');
+const endOverlay = document.getElementById('endOverlay');
+const startBtn = document.getElementById('startBtn');
+const targetLabel = document.getElementById('targetLabel');
+const finalScore = document.getElementById('finalScore');
+const finalHolder = document.getElementById('finalBatHolder');
+targetLabel.textContent = TARGET;
 
-    targetLabel.textContent = TARGET;
+let W=0,H=0;
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+window.addEventListener('resize', ()=>{ resize(); setTimeout(()=>resize(),50); });
+resize();
 
-    let W = 0, H = 0;
-    function resize(){
-      W = canvas.width = window.innerWidth;
-      H = canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+/* PLAYER (morcego) */
+const bat = { x: W/2, y: H*0.7, w:48, h:48, speed:300 };
+function updateBatPosition(){
+  // posicionar o container pelo centro do morcego
+  batContainer.style.left = (bat.x) + 'px';
+  batContainer.style.top  = (bat.y) + 'px';
+}
+updateBatPosition();
 
-    /* =================== Bat (jogador) =================== */
-    const bat = {x:W/2, y:H*0.7, w:64, h:64, speed:300};
-    function updateBatPosition(){
-      batContainer.style.left = (bat.x - bat.w/2) + 'px';
-      batContainer.style.top = (bat.y - bat.h/2) + 'px';
-    }
-    updateBatPosition();
+/* CONTROLES */
+const keys = {up:false,down:false,left:false,right:false};
+function bindBtn(id, keyName){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('touchstart', e=>{ e.preventDefault(); keys[keyName]=true; }, {passive:false});
+  el.addEventListener('touchend', e=>{ e.preventDefault(); keys[keyName]=false; }, {passive:false});
+  el.addEventListener('mousedown', ()=>keys[keyName]=true);
+  el.addEventListener('mouseup', ()=>keys[keyName]=false);
+  el.addEventListener('mouseleave', ()=>keys[keyName]=false);
+}
+bindBtn('btn-up','up');
+bindBtn('btn-down','down');
+bindBtn('btn-left','left');
+bindBtn('btn-right','right');
+window.addEventListener('keydown', e=>{
+  if(e.key.includes('Arrow')) e.preventDefault();
+  if(e.key==='ArrowUp') keys.up=true;
+  if(e.key==='ArrowDown') keys.down=true;
+  if(e.key==='ArrowLeft') keys.left=true;
+  if(e.key==='ArrowRight') keys.right=true;
+});
+window.addEventListener('keyup', e=>{
+  if(e.key==='ArrowUp') keys.up=false;
+  if(e.key==='ArrowDown') keys.down=false;
+  if(e.key==='ArrowLeft') keys.left=false;
+  if(e.key==='ArrowRight') keys.right=false;
+});
 
-    /* =================== Controles =================== */
-    const keys = {up:false,down:false,left:false,right:false};
+/* POTATO IMAGE */
+const potatoImg = new Image();
+potatoImg.src = 'assets/potato.png';
+let potatoImgLoaded = false;
+potatoImg.onload = ()=>{ potatoImgLoaded = true; console.log('potato loaded'); }
+potatoImg.onerror = ()=>{ potatoImgLoaded = false; console.warn('potato image not found at assets/potato.png'); }
 
-    // botões touch
-    function bindBtn(id, keyName){
-      const el = document.getElementById(id);
-      el.addEventListener('touchstart', e=>{e.preventDefault(); keys[keyName]=true}, {passive:false});
-      el.addEventListener('touchend', e=>{e.preventDefault(); keys[keyName]=false}, {passive:false});
-      el.addEventListener('mousedown', e=>{keys[keyName]=true});
-      el.addEventListener('mouseup', e=>{keys[keyName]=false});
-      el.addEventListener('mouseleave', e=>{keys[keyName]=false});
-    }
-    bindBtn('btn-up','up');
-    bindBtn('btn-down','down');
-    bindBtn('btn-left','left');
-    bindBtn('btn-right','right');
+/* ITENS */
+let potatoes = [], lastSpawn = 0, score = 0, running = false, lastTime = 0;
 
-    // teclado (útil também no desktop)
-    window.addEventListener('keydown', e=>{
-      if(e.key.includes('Arrow')){ e.preventDefault(); }
-      if(e.key==='ArrowUp') keys.up=true;
-      if(e.key==='ArrowDown') keys.down=true;
-      if(e.key==='ArrowLeft') keys.left=true;
-      if(e.key==='ArrowRight') keys.right=true;
-    });
-    window.addEventListener('keyup', e=>{
-      if(e.key==='ArrowUp') keys.up=false;
-      if(e.key==='ArrowDown') keys.down=false;
-      if(e.key==='ArrowLeft') keys.left=false;
-      if(e.key==='ArrowRight') keys.right=false;
-    });
+function spawnPotato(){
+  const size = POTATO_SIZE * (0.9 + Math.random()*0.2); // pequeno variance
+  potatoes.push({ x: Math.random()*(W-size), y: -size, vy: 120 + Math.random()*120, size });
+}
 
-    /* =================== Batatas (itens) =================== */
-    let potatoes = [];
-    let lastSpawn = 0;
-    let score = 0;
-    let running = false;
-    let lastTime = 0;
+/* LOOP */
+function step(ts){
+  if(!running) return;
+  if(!lastTime) lastTime = ts;
+  const dt = (ts - lastTime)/1000; lastTime = ts;
 
-    // tenta carregar uma imagem em /assets/potato.png -- se não existir, usa fallback
-    const potatoImg = new Image();
-    potatoImg.src = 'assets/potato.png';
-    let potatoImgLoaded = false;
-    potatoImg.onload = ()=>{potatoImgLoaded=true}
-    potatoImg.onerror = ()=>{potatoImgLoaded=false}
+  // mover morcego
+  const move = bat.speed * dt * GAME_SPEED;
+  if(keys.left) bat.x -= move;
+  if(keys.right) bat.x += move;
+  if(keys.up) bat.y -= move;
+  if(keys.down) bat.y += move;
+  // limites: deixa espaço para controles (aprox 120px)
+  const controlsSpace = Math.max(120, window.innerHeight * 0.16);
+  bat.x = Math.max(bat.w/2, Math.min(W - bat.w/2, bat.x));
+  bat.y = Math.max(bat.h/2, Math.min(H - bat.h/2 - controlsSpace, bat.y));
+  updateBatPosition();
 
-    function spawnPotato(){
-      const size = POTATO_SIZE * (0.8 + Math.random()*0.6);
-      potatoes.push({x:Math.random()*(W-size), y:-size, vy:120 + Math.random()*120, size});
-    }
+  // spawn
+  if(performance.now() - lastSpawn > SPAWN_INTERVAL){ lastSpawn = performance.now(); spawnPotato(); }
 
-    /* =================== Loop principal =================== */
-    function step(ts){
-      if(!running) return;
-      if(!lastTime) lastTime = ts;
-      const dt = (ts-lastTime)/1000; lastTime = ts;
+  // desenha
+  ctx.clearRect(0,0,W,H);
+  for(let i=potatoes.length-1;i>=0;i--){
+    const p = potatoes[i];
+    p.y += p.vy * dt * GAME_SPEED;
 
-      // movimento do morcego
-      const move = bat.speed * dt * GAME_SPEED;
-      if(keys.left) bat.x -= move;
-      if(keys.right) bat.x += move;
-      if(keys.up) bat.y -= move;
-      if(keys.down) bat.y += move;
-      // limites
-      bat.x = Math.max(bat.w/2, Math.min(W - bat.w/2, bat.x));
-      bat.y = Math.max(bat.h/2, Math.min(H - bat.h/2 - 120, bat.y)); // deixa espaço para controles
-      updateBatPosition();
-
-      // spawn
-      if(performance.now() - lastSpawn > SPAWN_INTERVAL){ lastSpawn = performance.now(); spawnPotato(); }
-
-      // atualizar potatas
-      ctx.clearRect(0,0,W,H);
-      for(let i=potatoes.length-1;i>=0;i--){
-        const p = potatoes[i];
-        p.y += p.vy * dt * GAME_SPEED;
-        // desenhar
-        if(potatoImgLoaded){
-          ctx.drawImage(potatoImg, p.x, p.y, p.size, p.size);
-        } else {
-          // fallback pixel art-ish circle
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          // sombra
-          ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(2, p.size-6, p.size-4, 6);
-          ctx.fillStyle = '#d17f2b';
-          roundRect(ctx,0,0,p.size,p.size/1.2,6,true,false);
-          ctx.restore();
-        }
-
-        // colisão simples com o container do morcego (usando coordenadas do bat)
-        const batBox = {x:bat.x - bat.w/2, y:bat.y - bat.h/2, w:bat.w, h:bat.h};
-        const pBox = {x:p.x, y:p.y, w:p.size, h:p.size};
-        if(rectIntersect(batBox,pBox)){
-          potatoes.splice(i,1); score++; scoreEl.textContent = score; 
-          if(score>=TARGET){ endGame(); return; }
-        } else if(p.y > H + 200){
-          potatoes.splice(i,1); // sumiu
-        }
-      }
-
-      requestAnimationFrame(step);
+    if(potatoImgLoaded){
+      ctx.drawImage(potatoImg, p.x, p.y, p.size, p.size);
+    } else {
+      // fallback: batata arredondada com detalhe
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      // sombra
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      ctx.fillRect(4, p.size-8, p.size-6, 6);
+      // corpo
+      ctx.fillStyle = '#d07b30';
+      roundRect(ctx, 0, 0, p.size, p.size*0.85, Math.max(6, p.size*0.12), true, false);
+      // detalhe
+      ctx.fillStyle = '#b15d1d';
+      ctx.fillRect(p.size*0.18, p.size*0.35, p.size*0.18, p.size*0.08);
+      ctx.restore();
     }
 
-    function rectIntersect(a,b){
-      return !(a.x>b.x+b.w || a.x+a.w<b.x || a.y>b.y+b.h || a.y+a.h<b.y);
+    // colisão
+    const batBox = { x: bat.x - bat.w/2, y: bat.y - bat.h/2, w: bat.w, h: bat.h };
+    const pBox = { x: p.x, y: p.y, w: p.size, h: p.size };
+    if(rectIntersect(batBox,pBox)){
+      potatoes.splice(i,1);
+      score++; scoreEl.textContent = score;
+      if(score>=TARGET){ endGame(); return; }
+    } else if(p.y > H + 200){
+      potatoes.splice(i,1);
     }
+  }
 
-    function roundRect(ctx, x, y, w, h, r, fill, stroke){
-      if (typeof stroke === 'undefined') stroke = true;
-      if (typeof r === 'undefined') r = 5;
-      ctx.beginPath();
-      ctx.moveTo(x+r, y);
-      ctx.arcTo(x+w, y, x+w, y+h, r);
-      ctx.arcTo(x+w, y+h, x, y+h, r);
-      ctx.arcTo(x, y+h, x, y, r);
-      ctx.arcTo(x, y, x+w, y, r);
-      ctx.closePath();
-      if(fill){ ctx.fill(); }
-      if(stroke){ ctx.stroke(); }
-    }
+  requestAnimationFrame(step);
+}
 
-    /* =================== Start / End =================== */
-    startBtn.addEventListener('click', ()=>{
-      overlay.classList.add('hidden');
-      startGame();
-    });
-    replayBtn.addEventListener('click', ()=>{
-      endOverlay.classList.add('hidden');
-      resetGame();
-      startGame();
-    });
+function rectIntersect(a,b){
+  return !(a.x > b.x + b.w || a.x + a.w < b.x || a.y > b.y + b.h || a.y + a.h < b.y);
+}
+function roundRect(ctx, x,y,w,h,r, fill, stroke){
+  if(typeof r==='undefined') r=5;
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}
 
-    function startGame(){
-      score = 0; scoreEl.textContent = 0; potatoes = []; lastSpawn = performance.now(); running = true; lastTime = 0;
-      requestAnimationFrame(step);
-    }
+/* START / END */
+startBtn.addEventListener('click', ()=>{ overlay.classList.add('hidden'); startGame(); });
+document.getElementById('replayBtn')?.addEventListener('click', ()=>{ endOverlay.classList.add('hidden'); resetGame(); startGame(); });
 
-    function resetGame(){
-      score = 0; scoreEl.textContent = 0; potatoes = [];
-      // recoloca morcego
-      bat.x = W/2; bat.y = H*0.7; updateBatPosition();
-    }
+function startGame(){
+  score = 0; scoreEl.textContent = 0; potatoes = []; lastSpawn = performance.now(); running = true; lastTime = 0;
+  // centraliza morcego
+  bat.x = W/2; bat.y = H*0.7; updateBatPosition();
+  requestAnimationFrame(step);
+}
+function resetGame(){
+  score = 0; scoreEl.textContent = 0; potatoes = [];
+  bat.x = W/2; bat.y = H*0.7; updateBatPosition();
+}
+function endGame(){
+  running = false;
+  finalScore.textContent = score;
+  finalHolder.innerHTML = '';
+  // clona e pausa sprite
+  const clone = batSprite.cloneNode(true);
+  clone.classList.add('still');
+  const wrap = document.createElement('div'); wrap.style.marginTop='12px'; wrap.appendChild(clone);
+  finalHolder.appendChild(wrap);
+  endOverlay.classList.remove('hidden');
+}
 
-    function endGame(){
-      running = false;
-      finalScore.textContent = score;
-      // clonar morcego parado (remove animação)
-      finalHolder.innerHTML = '';
-      const clone = batSprite.cloneNode(true);
-      clone.classList.add('still');
-      const wrap = document.createElement('div'); wrap.style.marginTop='12px'; wrap.appendChild(clone);
-      finalHolder.appendChild(wrap);
-      endOverlay.classList.remove('hidden');
-    }
+/* impede scroll no jogo */
+document.getElementById('game-wrap').addEventListener('touchmove', e=>{ e.preventDefault(); }, {passive:false});
 
-    // impedir scroll ao tocar no jogo
-    document.getElementById('game-wrap').addEventListener('touchmove', function(e){ e.preventDefault(); }, {passive:false});
-
-    // atualiza posição do morcego uma vez por frame (mesmo fora do loop para responsividade)
-    (function smooth(){ updateBatPosition(); requestAnimationFrame(smooth); })();
-
-    // ajuste inicial para mobile: posiciona controles um pouco acima se teclado aparece
-    window.addEventListener('resize', ()=>{ setTimeout(()=>resize(),50)});
-
-    // util: teste rápido para garantir que o jogador possa mover o morcego usando os botões
-    // (nada especial aqui)
-
-    // função pequena para informar caso queira trocar o alvo pelo HTML
-    // você pode editar a constante TARGET no topo do script para mudar a quantidade de batatas necessárias.
-
-  </script>
+/* loop leve para atualizar posição do container se necessário */
+(function smooth(){ updateBatPosition(); requestAnimationFrame(smooth); })();
+</script>
 </body>
 </html>
