@@ -20,7 +20,7 @@
   #hud{position:absolute;left:12px;top:12px;z-index:40;font-family:'UnifrakturCook',cursive;font-size:26px;color:var(--text);text-shadow:0 2px 0 rgba(0,0,0,.6);}
   #hud .count{display:inline-block;padding:6px 10px;border-radius:8px;background:rgba(197,27,27,0.08);border:1px solid rgba(197,27,27,0.14);font-size:18px}
 
-  /* Bat container and sprite (concreto, sem SASS) */
+  /* Bat container and sprite */
   .bat-container{
     position:absolute;
     width:56px;
@@ -31,25 +31,567 @@
     left:50%;
     top:50%;
   }
-  .bat{
-    width:56px;
-    height:56px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    pointer-events:none;
-    image-rendering: pixelated;
-  }
-  .bat svg{ width:100%; height:100%; display:block; }
-  .bat.still svg{ /* when showing in final screen we scale via JS */ }
 
-  /* Controls */
+  /* === START: compiled CodePen bat CSS (pixel-art via box-shadow) ===
+     Variables resolved:
+     $a -> #54556b
+     $b -> #202020
+     $c -> #fff
+     $size -> 4
+     $speed -> .4s
+  */
+  .bat {
+    width: 1px;
+    height: 1px;
+    transform: scale(4);
+    position: relative;
+    left: -128px;
+    top: -128px;
+    animation: .4s bat steps(1) infinite;
+  }
+
+  @keyframes bat {
+    0% {
+      box-shadow:
+        33px 6px #54556b,
+        34px 6px #54556b,
+        35px 6px #54556b,
+        36px 6px #54556b,
+        20px 7px #54556b,
+        21px 7px #54556b,
+        22px 7px #54556b,
+        23px 7px #54556b,
+        33px 7px #54556b,
+        34px 7px #54556b,
+        35px 7px #202020,
+        36px 7px #202020,
+        37px 7px #54556b,
+        38px 7px #54556b,
+        39px 7px #54556b,
+        43px 7px #54556b,
+        20px 8px #54556b,
+        21px 8px #54556b,
+        22px 8px #54556b,
+        23px 8px #54556b,
+        33px 8px #54556b,
+        34px 8px #54556b,
+        35px 8px #202020,
+        36px 8px #202020,
+        37px 8px #54556b,
+        38px 8px #54556b,
+        39px 8px #54556b,
+        43px 8px #54556b,
+        17px 9px #54556b,
+        18px 9px #54556b,
+        19px 9px #54556b,
+        20px 9px #54556b,
+        35px 9px #54556b,
+        36px 9px #202020,
+        37px 9px #202020,
+        38px 9px #202020,
+        39px 9px #202020,
+        40px 9px #54556b,
+        41px 9px #54556b,
+        42px 9px #54556b,
+        43px 9px #202020,
+        44px 9px #54556b,
+        45px 9px #54556b,
+        16px 10px #54556b,
+        17px 10px #202020,
+        18px 10px #202020,
+        19px 10px #202020,
+        20px 10px #54556b,
+        36px 10px #54556b,
+        37px 10px #202020,
+        38px 10px #202020,
+        39px 10px #202020,
+        40px 10px #202020,
+        41px 10px #202020,
+        42px 10px #202020,
+        43px 10px #202020,
+        44px 10px #54556b,
+        45px 10px #54556b,
+        16px 11px #54556b,
+        17px 11px #202020,
+        18px 11px #202020,
+        19px 11px #202020,
+        20px 11px #54556b,
+        36px 11px #54556b,
+        37px 11px #202020,
+        38px 11px #202020,
+        39px 11px #202020,
+        40px 11px #202020,
+        41px 11px #202020,
+        42px 11px #202020,
+        43px 11px #202020,
+        44px 11px #54556b,
+        45px 11px #54556b,
+        13px 12px #54556b,
+        14px 12px #54556b,
+        15px 12px #54556b,
+        16px 12px #202020,
+        17px 12px #202020,
+        18px 12px #54556b,
+        19px 12px #54556b,
+        20px 12px #54556b,
+        36px 12px #54556b,
+        37px 12px #54556b,
+        38px 12px #54556b,
+        39px 12px #202020,
+        40px 12px #202020,
+        41px 12px #202020,
+        42px 12px #202020,
+        43px 12px #202020,
+        44px 12px #54556b,
+        45px 12px #54556b,
+        12px 13px #54556b,
+        13px 13px #202020,
+        14px 13px #202020,
+        15px 13px #202020,
+        16px 13px #202020,
+        17px 13px #202020,
+        18px 13px #54556b,
+        19px 13px #54556b,
+        37px 13px #54556b,
+        38px 13px #54556b,
+        39px 13px #202020,
+        40px 13px #202020,
+        41px 13px #202020,
+        42px 13px #202020,
+        43px 13px #202020,
+        44px 13px #202020,
+        45px 13px #202020,
+        46px 13px #54556b,
+        10px 14px #54556b,
+        11px 14px #54556b,
+        12px 14px #202020,
+        13px 14px #202020,
+        14px 14px #202020,
+        15px 14px #202020,
+        16px 14px #202020,
+        17px 14px #54556b,
+        36px 14px #54556b,
+        37px 14px #54556b,
+        38px 14px #54556b,
+        39px 14px #202020,
+        40px 14px #202020,
+        41px 14px #202020,
+        42px 14px #202020,
+        43px 14px #202020,
+        44px 14px #202020,
+        45px 14px #202020,
+        46px 14px #202020,
+        47px 14px #54556b,
+        10px 15px #54556b,
+        11px 15px #54556b,
+        12px 15px #202020,
+        13px 15px #202020,
+        14px 15px #202020,
+        15px 15px #202020,
+        16px 15px #202020,
+        17px 15px #54556b,
+        36px 15px #54556b,
+        37px 15px #54556b,
+        38px 15px #54556b,
+        39px 15px #202020,
+        40px 15px #202020,
+        41px 15px #202020,
+        42px 15px #202020,
+        43px 15px #202020,
+        44px 15px #202020,
+        45px 15px #202020,
+        46px 15px #202020,
+        47px 15px #54556b,
+        10px 16px #54556b,
+        11px 16px #54556b,
+        12px 16px #202020,
+        13px 16px #202020,
+        14px 16px #202020,
+        15px 16px #202020,
+        16px 16px #202020,
+        17px 16px #54556b,
+        35px 16px #54556b,
+        36px 16px #54556b,
+        37px 16px #202020,
+        38px 16px #202020,
+        39px 16px #202020,
+        40px 16px #202020,
+        41px 16px #202020,
+        42px 16px #202020,
+        43px 16px #202020,
+        44px 16px #202020,
+        45px 16px #202020,
+        46px 16px #202020,
+        47px 16px #54556b,
+        9px 17px #54556b,
+        10px 17px #202020,
+        11px 17px #202020,
+        12px 17px #202020,
+        13px 17px #202020,
+        14px 17px #202020,
+        15px 17px #202020,
+        16px 17px #202020,
+        17px 17px #54556b,
+        37px 17px #54556b,
+        38px 17px #54556b,
+        39px 17px #202020,
+        40px 17px #202020,
+        41px 17px #202020,
+        42px 17px #202020,
+        43px 17px #202020,
+        44px 17px #202020,
+        45px 17px #202020,
+        46px 17px #202020,
+        47px 17px #202020,
+        48px 17px #54556b,
+        49px 17px #54556b,
+        51px 17px #54556b,
+        7px 18px #54556b,
+        8px 18px #54556b,
+        9px 18px #54556b,
+        10px 18px #202020,
+        11px 18px #202020,
+        12px 18px #202020,
+        13px 18px #202020,
+        14px 18px #202020,
+        15px 18px #202020,
+        16px 18px #202020,
+        17px 18px #54556b,
+        20px 18px #54556b,
+        37px 18px #54556b,
+        38px 18px #54556b,
+        39px 18px #202020,
+        40px 18px #202020,
+        41px 18px #202020,
+        42px 18px #202020,
+        43px 18px #202020,
+        44px 18px #202020,
+        45px 18px #202020,
+        46px 18px #202020,
+        47px 18px #202020,
+        48px 18px #54556b,
+        49px 18px #54556b,
+        51px 18px #202020,
+        7px 19px #54556b,
+        8px 19px #54556b,
+        9px 19px #54556b,
+        10px 19px #202020,
+        11px 19px #202020,
+        12px 19px #202020,
+        13px 19px #202020,
+        14px 19px #202020,
+        15px 19px #202020,
+        16px 19px #202020,
+        17px 19px #54556b,
+        20px 19px #54556b,
+        37px 19px #54556b,
+        38px 19px #54556b,
+        39px 19px #202020,
+        40px 19px #202020,
+        41px 19px #202020,
+        42px 19px #202020,
+        43px 19px #202020,
+        44px 19px #202020,
+        45px 19px #202020,
+        46px 19px #202020,
+        47px 19px #202020,
+        48px 19px #54556b,
+        49px 19px #54556b,
+        51px 19px #202020,
+        7px 20px #54556b,
+        8px 20px #54556b,
+        9px 20px #202020,
+        10px 20px #202020,
+        11px 20px #202020,
+        12px 20px #202020,
+        13px 20px #202020,
+        14px 20px #202020,
+        15px 20px #202020,
+        16px 20px #202020,
+        17px 20px #202020,
+        18px 20px #54556b,
+        19px 20px #54556b,
+        20px 20px #202020,
+        21px 20px #54556b,
+        36px 20px #54556b,
+        37px 20px #202020,
+        38px 20px #202020,
+        39px 20px #202020,
+        40px 20px #202020,
+        41px 20px #202020,
+        42px 20px #202020,
+        43px 20px #202020,
+        44px 20px #202020,
+        45px 20px #202020,
+        46px 20px #202020,
+        47px 20px #202020,
+        48px 20px #54556b,
+        49px 20px #54556b,
+        54px 20px #54556b,
+        55px 20px #54556b,
+        9px 21px #54556b,
+        10px 21px #202020,
+        11px 21px #202020,
+        12px 21px #202020,
+        13px 21px #202020,
+        14px 21px #202020,
+        15px 21px #202020,
+        16px 21px #202020,
+        17px 21px #202020,
+        18px 21px #202020,
+        19px 21px #202020,
+        20px 21px #202020,
+        21px 21px #54556b,
+        35px 21px #54556b,
+        36px 21px #54556b,
+        37px 21px #202020,
+        38px 21px #202020,
+        39px 21px #202020,
+        40px 21px #202020,
+        41px 21px #202020,
+        42px 21px #202020,
+        43px 21px #202020;
+    }
+    100% {
+      box-shadow:
+        31px 4px #54556b,
+        32px 4px #54556b,
+        33px 4px #54556b,
+        34px 4px #54556b,
+        35px 4px #54556b,
+        31px 5px #54556b,
+        32px 5px #54556b,
+        33px 5px #54556b,
+        34px 5px #54556b,
+        35px 5px #54556b,
+        21px 6px #54556b,
+        22px 6px #54556b,
+        23px 6px #54556b,
+        24px 6px #54556b,
+        31px 6px #54556b,
+        32px 6px #54556b,
+        33px 6px #202020,
+        34px 6px #202020,
+        35px 6px #202020,
+        36px 6px #54556b,
+        37px 6px #54556b,
+        38px 6px #54556b,
+        18px 7px #54556b,
+        19px 7px #54556b,
+        20px 7px #54556b,
+        21px 7px #202020,
+        22px 7px #202020,
+        23px 7px #202020,
+        24px 7px #54556b,
+        32px 7px #54556b,
+        33px 7px #202020,
+        34px 7px #202020,
+        35px 7px #202020,
+        36px 7px #202020,
+        37px 7px #202020,
+        38px 7px #202020,
+        39px 7px #54556b,
+        40px 7px #54556b,
+        18px 8px #54556b,
+        19px 8px #54556b,
+        20px 8px #54556b,
+        21px 8px #202020,
+        22px 8px #202020,
+        23px 8px #202020,
+        24px 8px #54556b,
+        32px 8px #54556b,
+        33px 8px #202020,
+        34px 8px #202020,
+        35px 8px #202020,
+        36px 8px #202020,
+        37px 8px #202020,
+        38px 8px #202020,
+        39px 8px #54556b,
+        40px 8px #54556b,
+        17px 9px #54556b,
+        18px 9px #202020,
+        19px 9px #202020,
+        20px 9px #202020,
+        21px 9px #202020,
+        22px 9px #54556b,
+        23px 9px #54556b,
+        33px 9px #54556b,
+        34px 9px #54556b,
+        35px 9px #202020,
+        36px 9px #202020,
+        37px 9px #202020,
+        38px 9px #202020,
+        39px 9px #202020,
+        40px 9px #202020,
+        41px 9px #54556b,
+        42px 9px #54556b,
+        16px 10px #54556b,
+        17px 10px #202020,
+        18px 10px #202020,
+        19px 10px #202020,
+        20px 10px #202020,
+        21px 10px #54556b,
+        33px 10px #54556b,
+        34px 10px #54556b,
+        35px 10px #202020,
+        36px 10px #202020,
+        37px 10px #202020,
+        38px 10px #202020,
+        39px 10px #202020,
+        40px 10px #202020,
+        41px 10px #202020,
+        42px 10px #202020,
+        43px 10px #54556b,
+        16px 11px #54556b,
+        17px 11px #202020,
+        18px 11px #202020,
+        19px 11px #202020,
+        20px 11px #202020,
+        21px 11px #54556b,
+        33px 11px #54556b,
+        34px 11px #54556b,
+        35px 11px #202020,
+        36px 11px #202020,
+        37px 11px #202020,
+        38px 11px #202020,
+        39px 11px #202020,
+        40px 11px #202020,
+        41px 11px #202020,
+        42px 11px #202020,
+        43px 11px #54556b,
+        14px 12px #54556b,
+        15px 12px #54556b,
+        16px 12px #202020,
+        17px 12px #202020,
+        18px 12px #202020,
+        19px 12px #202020,
+        20px 12px #202020,
+        21px 12px #54556b,
+        35px 12px #54556b,
+        36px 12px #202020,
+        37px 12px #202020,
+        38px 12px #202020,
+        39px 12px #202020,
+        40px 12px #202020,
+        41px 12px #202020,
+        42px 12px #202020,
+        43px 12px #202020,
+        44px 12px #54556b,
+        45px 12px #54556b,
+        12px 13px #54556b,
+        13px 13px #54556b,
+        14px 13px #202020,
+        15px 13px #202020,
+        16px 13px #202020,
+        17px 13px #202020,
+        18px 13px #202020,
+        19px 13px #202020,
+        20px 13px #54556b,
+        35px 13px #54556b,
+        36px 13px #202020,
+        37px 13px #202020,
+        38px 13px #202020,
+        39px 13px #202020,
+        40px 13px #202020,
+        41px 13px #202020,
+        42px 13px #202020,
+        43px 13px #202020,
+        44px 13px #202020,
+        45px 13px #202020,
+        46px 13px #54556b,
+        12px 14px #54556b,
+        13px 14px #202020,
+        14px 14px #202020,
+        15px 14px #202020,
+        16px 14px #202020,
+        17px 14px #202020,
+        18px 14px #202020,
+        19px 14px #202020,
+        20px 14px #54556b,
+        36px 14px #54556b,
+        37px 14px #202020,
+        38px 14px #202020,
+        39px 14px #202020,
+        40px 14px #202020,
+        41px 14px #202020,
+        42px 14px #202020,
+        43px 14px #202020,
+        44px 14px #202020,
+        45px 14px #202020,
+        46px 14px #54556b,
+        12px 15px #54556b,
+        13px 15px #202020,
+        14px 15px #202020,
+        15px 15px #202020,
+        16px 15px #202020,
+        17px 15px #202020,
+        18px 15px #202020,
+        19px 15px #202020,
+        20px 15px #54556b,
+        36px 15px #54556b,
+        37px 15px #202020,
+        38px 15px #202020,
+        39px 15px #202020,
+        40px 15px #202020,
+        41px 15px #202020,
+        42px 15px #202020,
+        43px 15px #202020,
+        44px 15px #202020,
+        45px 15px #202020,
+        46px 15px #54556b,
+        12px 16px #54556b,
+        13px 16px #202020,
+        14px 16px #202020,
+        15px 16px #202020,
+        16px 16px #202020,
+        17px 16px #202020,
+        18px 16px #202020,
+        19px 16px #202020,
+        20px 16px #54556b,
+        29px 16px #202020,
+        30px 16px #202020,
+        36px 16px #54556b,
+        37px 16px #202020,
+        38px 16px #202020,
+        39px 16px #202020,
+        40px 16px #202020,
+        41px 16px #202020,
+        42px 16px #202020,
+        43px 16px #202020,
+        44px 16px #202020,
+        45px 16px #202020,
+        46px 16px #202020,
+        47px 16px #54556b,
+        9px 17px #54556b,
+        10px 17px #54556b,
+        11px 17px #54556b,
+        12px 17px #202020,
+        13px 17px #202020,
+        14px 17px #202020,
+        15px 17px #202020,
+        16px 17px #202020,
+        17px 17px #202020,
+        18px 17px #202020,
+        19px 17px #202020,
+        20px 17px #54556b,
+        36px 17px #54556b,
+        37px 17px #202020,
+        38px 17px #202020,
+        39px 17px #202020,
+        40px 17px #202020,
+        41px 17px #202020,
+        42px 17px #202020,
+        43px 17px #202020;
+    }
+  }
+  /* === END compiled bat CSS === */
+
+  /* Controls: centered D-pad, lifted above bottom to avoid system nav overlap */
   #controls{
     position:absolute;
     left:50%;
     transform:translateX(-50%);
-    bottom:92px;
+    bottom:92px; /* lift controls above system nav */
     z-index:50;
     display:grid;
     grid-template-columns:repeat(3,56px);
@@ -65,6 +607,7 @@
   #btn-left{grid-area:left}
   #btn-down{grid-area:down}
   #btn-right{grid-area:right}
+
   .ctrl-btn{width:56px;height:56px;border-radius:12px;background:rgba(255,255,255,0.03);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.04);user-select:none}
   .ctrl-btn:active{transform:scale(.98)}
   .ctrl-btn .arrow{font-size:22px;color:var(--text);font-weight:700;font-family:'Cinzel',serif;text-shadow:0 2px 0 rgba(0,0,0,.6)}
@@ -77,22 +620,33 @@
   .btn-primary{margin-top:12px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-weight:700;font-family:'Cinzel',serif}
   .hidden{display:none}
 
-  /* Final overlay */
+  /* Fullscreen final overlay (initially hidden). When shown, will cover everything */
   #endOverlay {
-    position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:9999;
-    display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px; box-sizing:border-box;
-    background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(10,0,0,0.97)); text-align:center;
+    position:fixed;
+    left:0; top:0;
+    width:100vw; height:100vh;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:24px;
+    box-sizing:border-box;
+    background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(10,0,0,0.97));
+    text-align:center;
   }
   #endOverlay.show { display:flex; }
   #endOverlay h1{ font-family:'UnifrakturCook',cursive;color:var(--accent);font-size:40px;margin:6px 0;text-shadow:0 6px 18px rgba(0,0,0,0.9) }
   #finalBatHolder{ margin-top:18px; display:flex; align-items:center; justify-content:center; }
-  #finalBatHolder .bat svg{ width:320px; height:320px; }
+  #finalBatHolder .bat{ transform: none !important; } /* quando exibido no final, queremos o bat grande via svg ou escala diferente */
 
+  /* hide elements during end as safety */
   .hidden-during-end { display:none !important; }
 
+  /* responsive tweaks */
   @media (max-width:420px){
     .bat-container{width:50px;height:50px}
-    .bat{width:50px;height:50px}
+    .bat{transform:scale(4); left:-128px; top:-128px}
     #controls{bottom:84px; gap:8px}
     .ctrl-btn{width:50px;height:50px}
     #hud{font-size:22px}
@@ -108,15 +662,8 @@
 
     <div id="hud"><span style="font-family:'UnifrakturCook',cursive">Batatas: </span> <span class="count" id="score">0</span></div>
 
-    <!-- bat sprite container -->
-    <div class="bat-container" id="batContainer">
-      <div class="bat" id="batSprite">
-        <!-- SVG inline do morcego (garante visibilidade sem SCSS) -->
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
-          <path d="M32 8c-4 0-7 3-9 5-3-1-7-1-10 1-1 1-3 2-3 2s2 0 3 1c1 0 4 2 5 3 2 2 3 4 3 4s-4-1-7 0c-3 1-10 6-10 6s6 3 11 2c4-1 6-2 8-1 1 1 2 3 2 3s-1 0-3 2c-2 2-3 4-3 4s3 0 6-2c3-2 8-6 8-6s-1-2 0-4c1-2 3-3 4-3 1 0 3-1 3-1s-2-1-3-2c-3-2-6-2-9-1-2-2-5-5-9-5z" fill="#fff"/>
-        </svg>
-      </div>
-    </div>
+    <!-- bat sprite container: observe que a div .bat é vazia (como no CodePen) -->
+    <div class="bat-container" id="batContainer"><div class="bat" id="batSprite"></div></div>
 
     <!-- controls -->
     <div id="controls">
@@ -135,7 +682,7 @@
       <button id="startBtn" class="btn-primary">COMEÇAR</button>
     </div>
 
-    <!-- final overlay -->
+    <!-- final overlay (fullscreen) -->
     <div id="endOverlay" aria-hidden="true">
       <h1>acredita em mim agora?</h1>
       <div id="finalBatHolder"></div>
@@ -169,7 +716,10 @@ resize();
 
 /* player */
 const bat = { x: W/2, y: H*0.7, w:56, h:56, speed:320 };
-function updateBatPosition(){ batContainer.style.left = bat.x + 'px'; batContainer.style.top  = bat.y + 'px'; }
+function updateBatPosition(){
+  batContainer.style.left = bat.x + 'px';
+  batContainer.style.top  = bat.y + 'px';
+}
 updateBatPosition();
 
 /* controls */
@@ -187,7 +737,6 @@ bindBtn('btn-up','up');
 bindBtn('btn-down','down');
 bindBtn('btn-left','left');
 bindBtn('btn-right','right');
-
 window.addEventListener('keydown', e=>{
   if(e.key.includes('Arrow')) e.preventDefault();
   if(e.key==='ArrowUp') keys.up=true;
@@ -206,18 +755,24 @@ window.addEventListener('keyup', e=>{
 const potatoImg = new Image();
 potatoImg.src = 'assets/potato.png';
 let potatoImgLoaded = false;
-potatoImg.onload = ()=>{ potatoImgLoaded = true; }
-potatoImg.onerror = ()=>{ potatoImgLoaded = false; }
+potatoImg.onload = ()=>{ potatoImgLoaded = true; console.log('potato loaded'); }
+potatoImg.onerror = ()=>{ potatoImgLoaded = false; console.warn('potato image not found at assets/potato.png'); }
 
 /* game state */
 let potatoes = [], lastSpawn = 0, score = 0, running = false, lastTime = 0;
-function spawnPotato(){ const size = POTATO_SIZE * (0.9 + Math.random()*0.2); potatoes.push({ x: Math.random()*(W-size), y: -size, vy: 120 + Math.random()*120, size }); }
 
+function spawnPotato(){
+  const size = POTATO_SIZE * (0.9 + Math.random()*0.2);
+  potatoes.push({ x: Math.random()*(W-size), y: -size, vy: 120 + Math.random()*120, size });
+}
+
+/* main loop */
 function step(ts){
   if(!running) return;
   if(!lastTime) lastTime = ts;
   const dt = (ts - lastTime)/1000; lastTime = ts;
 
+  // movement
   const move = bat.speed * dt * GAME_SPEED;
   if(keys.left) bat.x -= move;
   if(keys.right) bat.x += move;
@@ -228,12 +783,15 @@ function step(ts){
   bat.y = Math.max(bat.h/2, Math.min(H - bat.h/2 - controlsSpace, bat.y));
   updateBatPosition();
 
+  // spawn
   if(performance.now() - lastSpawn > SPAWN_INTERVAL){ lastSpawn = performance.now(); spawnPotato(); }
 
+  // draw
   ctx.clearRect(0,0,W,H);
   for(let i=potatoes.length-1;i>=0;i--){
     const p = potatoes[i];
     p.y += p.vy * dt * GAME_SPEED;
+
     if(potatoImgLoaded){
       ctx.drawImage(potatoImg, p.x, p.y, p.size, p.size);
     } else {
@@ -248,6 +806,7 @@ function step(ts){
       ctx.restore();
     }
 
+    // collision
     const batBox = { x: bat.x - bat.w/2, y: bat.y - bat.h/2, w: bat.w, h: bat.h };
     const pBox = { x: p.x, y: p.y, w: p.size, h: p.size };
     if(rectIntersect(batBox,pBox)){
@@ -263,44 +822,100 @@ function step(ts){
 }
 
 /* helpers */
-function rectIntersect(a,b){ return !(a.x > b.x + b.w || a.x + a.w < b.x || a.y > b.y + b.h || a.y + a.h < b.y); }
-function roundRect(ctx, x,y,w,h,r, fill, stroke){ if(typeof r==='undefined') r=5; ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); if(fill) ctx.fill(); if(stroke) ctx.stroke(); }
+function rectIntersect(a,b){
+  return !(a.x > b.x + b.w || a.x + a.w < b.x || a.y > b.y + b.h || a.y + a.h < b.y);
+}
+function roundRect(ctx, x,y,w,h,r, fill, stroke){
+  if(typeof r==='undefined') r=5;
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}
 
-/* start / end */
+/* start / reset / end */
 startBtn.addEventListener('click', ()=>{ overlay.classList.add('hidden'); startGame(); });
-function startGame(){ score = 0; scoreEl.textContent = 0; potatoes = []; lastSpawn = performance.now(); running = true; lastTime = 0; document.getElementById('game').style.display = ''; document.getElementById('controls').style.display = ''; document.getElementById('hud').style.display = ''; endOverlay.classList.remove('show'); endOverlay.setAttribute('aria-hidden','true'); bat.x = W/2; bat.y = H*0.7; updateBatPosition(); requestAnimationFrame(step); }
+
+function startGame(){
+  score = 0; scoreEl.textContent = 0; potatoes = []; lastSpawn = performance.now(); running = true; lastTime = 0;
+  // make sure visible elements are visible
+  document.getElementById('game').style.display = '';
+  document.getElementById('controls').style.display = '';
+  document.getElementById('hud').style.display = '';
+  endOverlay.classList.remove('show');
+  endOverlay.setAttribute('aria-hidden','true');
+  // reset bat pos
+  bat.x = W/2; bat.y = H*0.7; updateBatPosition();
+  requestAnimationFrame(step);
+}
+
+function resetGame(){
+  score = 0; scoreEl.textContent = 0; potatoes = [];
+  bat.x = W/2; bat.y = H*0.7; updateBatPosition();
+}
 
 function endGame(){
   running = false;
+
+  // clear canvas and items
   ctx.clearRect(0,0,W,H);
   potatoes = [];
-  document.getElementById('game').style.display = 'none';
-  document.getElementById('controls').style.display = 'none';
-  document.getElementById('hud').style.display = 'none';
-  document.getElementById('overlay').style.display = 'none';
 
+  // hide canvas, hud and controls so only final overlay remains
+  const canvasEl = document.getElementById('game');
+  const controlsEl = document.getElementById('controls');
+  const hudEl = document.getElementById('hud');
+  const overlayEl = document.getElementById('overlay');
+
+  if(canvasEl) canvasEl.style.display = 'none';
+  if(controlsEl) controlsEl.style.display = 'none';
+  if(hudEl) hudEl.style.display = 'none';
+  if(overlayEl) overlayEl.style.display = 'none';
+
+  // prepare and insert a larger bat (clone the empty .bat and let CSS animate)
   finalHolder.innerHTML = '';
   const spriteClone = batSprite.cloneNode(true);
   spriteClone.classList.add('still');
-  const svg = spriteClone.querySelector('svg');
-  if(svg){ svg.style.width = '320px'; svg.style.height = '320px'; }
+  // override to show larger pixel-art: we'll create a temporary element using the same box-shadow technique,
+  // but because the original .bat is 1px scaled, placing it in a wrapper where it's visible is enough.
   const wrap = document.createElement('div');
   wrap.style.width = '320px';
   wrap.style.height = '320px';
   wrap.style.display = 'flex';
   wrap.style.alignItems = 'center';
   wrap.style.justifyContent = 'center';
-  wrap.appendChild(spriteClone);
+  // create a copy of the .bat but scaled up visually by increasing transform
+  const bigBat = document.createElement('div');
+  bigBat.className = 'bat';
+  bigBat.style.transform = 'scale(8)'; // bigger for final screen
+  bigBat.style.left = '-256px';
+  bigBat.style.top = '-256px';
+  bigBat.style.animation = 'none';
+  wrap.appendChild(bigBat);
   finalHolder.appendChild(wrap);
 
+  // show final overlay fullscreen and only it
   endOverlay.classList.add('show');
   endOverlay.setAttribute('aria-hidden','false');
+
+  // (optional) scroll to top to avoid mobile clipping
   window.scrollTo(0,0);
 }
 
 /* prevent scroll while touching game */
 document.getElementById('game-wrap').addEventListener('touchmove', e=>{ e.preventDefault(); }, {passive:false});
+
+/* small loop to keep bat container pos in sync */
 (function smooth(){ updateBatPosition(); requestAnimationFrame(smooth); })();
+
+/* no replay on click: game ends at final overlay (user requested) */
+
+/* safety: if user reloads, re-size and re-center bat */
 window.addEventListener('load', ()=>{ resize(); bat.x = window.innerWidth/2; bat.y = window.innerHeight*0.7; updateBatPosition(); });
 </script>
 </body>
