@@ -12,38 +12,42 @@
     --text:#fff;
     --muted:#54556b;
   }
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:'Cinzel',serif}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:'Cinzel',serif;-webkit-tap-highlight-color:transparent}
   #game-wrap{position:relative;width:100vw;height:100vh;overflow:hidden;touch-action:none}
   canvas#game{display:block;background:linear-gradient(180deg,#050505 0%, #0b0b0b 100%);width:100%;height:100%}
 
   /* HUD */
-  #hud{position:absolute;left:12px;top:12px;z-index:40;font-family:'UnifrakturCook',cursive;font-size:20px;color:var(--text);text-shadow:0 2px 0 rgba(0,0,0,.6);}
-  #hud .count{display:inline-block;padding:6px 10px;border-radius:8px;background:rgba(200,0,0,0.06);border:1px solid rgba(200,0,0,0.12);}
+  #hud{position:absolute;left:12px;top:12px;z-index:40;font-family:'UnifrakturCook',cursive;font-size:26px;color:var(--text);text-shadow:0 2px 0 rgba(0,0,0,.6);}
+  #hud .count{display:inline-block;padding:6px 10px;border-radius:8px;background:rgba(197,27,27,0.08);border:1px solid rgba(197,27,27,0.14);font-size:18px}
 
-  /* Bat container e sprite (ajustes para mobile) */
+  /* Bat container and sprite */
   .bat-container{
     position:absolute;
-    width:48px;
-    height:48px;
+    width:56px;
+    height:56px;
     transform:translate(-50%,-50%);
     z-index:45;
     pointer-events:none;
+    left:50%;
+    top:50%;
   }
-  /* sprite adaptado: diminuí escala e corrigi offsets */
+  /* the sprite is a CSS pixel-art trick (from CodePen) - scaled down to avoid cutting */
   .bat{
     width:1px;height:1px;position:relative;
     left:-64px; top:-64px;
-    transform:scale(2);
+    transform:scale(2.2);
     animation:.6s steps(2) infinite;
     image-rendering: pixelated;
+    will-change:transform;
   }
   .bat.still{animation:none}
 
-  /* Controles reorganizados: D-pad em grid, deslocados para cima para não encostar na barra do SO */
+  /* Controls: centered D-pad, lifted above bottom to avoid system nav overlap */
   #controls{
     position:absolute;
-    left:18px;
-    bottom: calc(18px + env(safe-area-inset-bottom));
+    left:50%;
+    transform:translateX(-50%);
+    bottom:92px; /* lift controls above system nav */
     z-index:50;
     display:grid;
     grid-template-columns:repeat(3,56px);
@@ -53,6 +57,7 @@
       ". up ."
       "left down right"
       ". . .";
+    pointer-events:auto;
   }
   #btn-up{grid-area:up}
   #btn-left{grid-area:left}
@@ -62,23 +67,49 @@
   .ctrl-btn{width:56px;height:56px;border-radius:12px;background:rgba(255,255,255,0.03);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.04);user-select:none}
   .ctrl-btn:active{transform:scale(.98)}
   .ctrl-btn .arrow{font-size:22px;color:var(--text);font-weight:700;font-family:'Cinzel',serif;text-shadow:0 2px 0 rgba(0,0,0,.6)}
+  #btn-empty, #btn-empty2{display:none}
 
-  /* Esconde espaços vazios */
-  #btn-empty, #btn-empty2 {display:none}
-
-  /* Overlay minimalista */
+  /* Overlays */
   .overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;max-width:92vw;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(0,0,0,0.75), rgba(10,0,0,0.6));border:2px solid rgba(197,27,27,0.25);text-align:center}
   .overlay h1{font-family:'UnifrakturCook',cursive;color:var(--accent);font-size:34px;margin:6px 0}
   .overlay p{color:var(--text);font-size:16px;margin:6px 0}
   .btn-primary{margin-top:12px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-weight:700;font-family:'Cinzel',serif}
   .hidden{display:none}
 
-  /* Ajustes responsivos */
+  /* Fullscreen final overlay (initially hidden). When shown, will cover everything */
+  #endOverlay {
+    position:fixed;
+    left:0; top:0;
+    width:100vw; height:100vh;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:24px;
+    box-sizing:border-box;
+    background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(10,0,0,0.97));
+    text-align:center;
+  }
+  #endOverlay.show { display:flex; }
+  #endOverlay h1{ font-family:'UnifrakturCook',cursive;color:var(--accent);font-size:40px;margin:6px 0;text-shadow:0 6px 18px rgba(0,0,0,0.9) }
+  #finalBatHolder{ margin-top:18px; display:flex; align-items:center; justify-content:center; }
+  /* final bat scaling */
+  #finalBatHolder .bat{ transform: scale(5) !important; left:-160px !important; top:-160px !important; animation:none !important; }
+
+  /* hide elements during end as safety */
+  .hidden-during-end { display:none !important; }
+
+  /* responsive tweaks */
   @media (max-width:420px){
-    .bat-container{width:44px;height:44px}
-    .bat{transform:scale(1.9); left:-60px; top:-60px}
-    #controls{left:14px; gap:8px}
-    .ctrl-btn{width:52px;height:52px}
+    .bat-container{width:50px;height:50px}
+    .bat{transform:scale(2); left:-60px; top:-60px}
+    #controls{bottom:84px; gap:8px}
+    .ctrl-btn{width:50px;height:50px}
+    #hud{font-size:22px}
+    #hud .count{font-size:16px}
+    #endOverlay h1{font-size:32px}
+    #finalBatHolder .bat{ transform: scale(4.2) !important; left:-140px !important; top:-140px !important; }
   }
 </style>
 </head>
@@ -86,10 +117,12 @@
   <div id="game-wrap">
     <canvas id="game"></canvas>
 
-    <div id="hud"><span style="font-family:'UnifrakturCook',cursive;font-size:26px">Batatas: </span> <span class="count" id="score">0</span></div>
+    <div id="hud"><span style="font-family:'UnifrakturCook',cursive">Batatas: </span> <span class="count" id="score">0</span></div>
 
+    <!-- bat sprite container -->
     <div class="bat-container" id="batContainer"><div class="bat" id="batSprite"></div></div>
 
+    <!-- controls -->
     <div id="controls">
       <div id="btn-up" class="ctrl-btn"><div class="arrow">▲</div></div>
       <div id="btn-empty" class="ctrl-btn"></div>
@@ -99,17 +132,17 @@
       <div id="btn-empty2" class="ctrl-btn"></div>
     </div>
 
+    <!-- start overlay -->
     <div id="overlay" class="overlay">
       <h1>morceguinho</h1>
       <p>Use os botões de setinha (cima / baixo / esquerda / direita) para controlar o morcego.<br>Pegue <strong id="targetLabel">10</strong> batatas-doce.</p>
       <button id="startBtn" class="btn-primary">COMEÇAR</button>
     </div>
 
-    <div id="endOverlay" class="overlay hidden">
-      <h1 style="font-size:40px">acredita em mim agora?</h1>
-      <div style="margin-top:12px;color:var(--text);font-family:'Cinzel',serif">Você pegou <strong id="finalScore">0</strong> batatas.</div>
-      <div id="finalBatHolder" style="margin-top:10px"></div>
-      <button id="replayBtn" class="btn-primary">JOGAR DE NOVO</button>
+    <!-- final overlay (fullscreen) -->
+    <div id="endOverlay" aria-hidden="true">
+      <h1>acredita em mim agora?</h1>
+      <div id="finalBatHolder"></div>
     </div>
   </div>
 
@@ -118,9 +151,9 @@
 const TARGET = 10;
 const SPAWN_INTERVAL = 800;
 const GAME_SPEED = 1;
-const POTATO_SIZE = 64; // você pediu 64x64
+const POTATO_SIZE = 64;
 
-/* SETUP */
+/* ELEMENTS */
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 const batContainer = document.getElementById('batContainer');
@@ -130,7 +163,6 @@ const overlay = document.getElementById('overlay');
 const endOverlay = document.getElementById('endOverlay');
 const startBtn = document.getElementById('startBtn');
 const targetLabel = document.getElementById('targetLabel');
-const finalScore = document.getElementById('finalScore');
 const finalHolder = document.getElementById('finalBatHolder');
 targetLabel.textContent = TARGET;
 
@@ -139,16 +171,16 @@ function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = win
 window.addEventListener('resize', ()=>{ resize(); setTimeout(()=>resize(),50); });
 resize();
 
-/* PLAYER (morcego) */
-const bat = { x: W/2, y: H*0.7, w:48, h:48, speed:300 };
+/* player */
+const bat = { x: W/2, y: H*0.7, w:56, h:56, speed:320 };
 function updateBatPosition(){
-  // posicionar o container pelo centro do morcego
-  batContainer.style.left = (bat.x) + 'px';
-  batContainer.style.top  = (bat.y) + 'px';
+  // center the container on bat.x/y
+  batContainer.style.left = bat.x + 'px';
+  batContainer.style.top  = bat.y + 'px';
 }
 updateBatPosition();
 
-/* CONTROLES */
+/* controls */
 const keys = {up:false,down:false,left:false,right:false};
 function bindBtn(id, keyName){
   const el = document.getElementById(id);
@@ -177,34 +209,33 @@ window.addEventListener('keyup', e=>{
   if(e.key==='ArrowRight') keys.right=false;
 });
 
-/* POTATO IMAGE */
+/* potatoes image */
 const potatoImg = new Image();
 potatoImg.src = 'assets/potato.png';
 let potatoImgLoaded = false;
 potatoImg.onload = ()=>{ potatoImgLoaded = true; console.log('potato loaded'); }
 potatoImg.onerror = ()=>{ potatoImgLoaded = false; console.warn('potato image not found at assets/potato.png'); }
 
-/* ITENS */
+/* game state */
 let potatoes = [], lastSpawn = 0, score = 0, running = false, lastTime = 0;
 
 function spawnPotato(){
-  const size = POTATO_SIZE * (0.9 + Math.random()*0.2); // pequeno variance
+  const size = POTATO_SIZE * (0.9 + Math.random()*0.2);
   potatoes.push({ x: Math.random()*(W-size), y: -size, vy: 120 + Math.random()*120, size });
 }
 
-/* LOOP */
+/* main loop */
 function step(ts){
   if(!running) return;
   if(!lastTime) lastTime = ts;
   const dt = (ts - lastTime)/1000; lastTime = ts;
 
-  // mover morcego
+  // movement
   const move = bat.speed * dt * GAME_SPEED;
   if(keys.left) bat.x -= move;
   if(keys.right) bat.x += move;
   if(keys.up) bat.y -= move;
   if(keys.down) bat.y += move;
-  // limites: deixa espaço para controles (aprox 120px)
   const controlsSpace = Math.max(120, window.innerHeight * 0.16);
   bat.x = Math.max(bat.w/2, Math.min(W - bat.w/2, bat.x));
   bat.y = Math.max(bat.h/2, Math.min(H - bat.h/2 - controlsSpace, bat.y));
@@ -213,7 +244,7 @@ function step(ts){
   // spawn
   if(performance.now() - lastSpawn > SPAWN_INTERVAL){ lastSpawn = performance.now(); spawnPotato(); }
 
-  // desenha
+  // draw
   ctx.clearRect(0,0,W,H);
   for(let i=potatoes.length-1;i>=0;i--){
     const p = potatoes[i];
@@ -222,22 +253,18 @@ function step(ts){
     if(potatoImgLoaded){
       ctx.drawImage(potatoImg, p.x, p.y, p.size, p.size);
     } else {
-      // fallback: batata arredondada com detalhe
       ctx.save();
       ctx.translate(p.x, p.y);
-      // sombra
       ctx.fillStyle = 'rgba(0,0,0,0.45)';
       ctx.fillRect(4, p.size-8, p.size-6, 6);
-      // corpo
       ctx.fillStyle = '#d07b30';
       roundRect(ctx, 0, 0, p.size, p.size*0.85, Math.max(6, p.size*0.12), true, false);
-      // detalhe
       ctx.fillStyle = '#b15d1d';
       ctx.fillRect(p.size*0.18, p.size*0.35, p.size*0.18, p.size*0.08);
       ctx.restore();
     }
 
-    // colisão
+    // collision
     const batBox = { x: bat.x - bat.w/2, y: bat.y - bat.h/2, w: bat.w, h: bat.h };
     const pBox = { x: p.x, y: p.y, w: p.size, h: p.size };
     if(rectIntersect(batBox,pBox)){
@@ -252,6 +279,7 @@ function step(ts){
   requestAnimationFrame(step);
 }
 
+/* helpers */
 function rectIntersect(a,b){
   return !(a.x > b.x + b.w || a.x + a.w < b.x || a.y > b.y + b.h || a.y + a.h < b.y);
 }
@@ -268,37 +296,93 @@ function roundRect(ctx, x,y,w,h,r, fill, stroke){
   if(stroke) ctx.stroke();
 }
 
-/* START / END */
+/* start / reset / end */
 startBtn.addEventListener('click', ()=>{ overlay.classList.add('hidden'); startGame(); });
-document.getElementById('replayBtn')?.addEventListener('click', ()=>{ endOverlay.classList.add('hidden'); resetGame(); startGame(); });
 
 function startGame(){
   score = 0; scoreEl.textContent = 0; potatoes = []; lastSpawn = performance.now(); running = true; lastTime = 0;
-  // centraliza morcego
+  // make sure visible elements are visible (in case replay)
+  document.getElementById('game').style.display = '';
+  document.getElementById('controls').style.display = '';
+  document.getElementById('hud').style.display = '';
+  endOverlay.classList.remove('show');
+  endOverlay.classList.remove('hidden');
+  // reset bat pos
   bat.x = W/2; bat.y = H*0.7; updateBatPosition();
   requestAnimationFrame(step);
 }
+
 function resetGame(){
   score = 0; scoreEl.textContent = 0; potatoes = [];
   bat.x = W/2; bat.y = H*0.7; updateBatPosition();
 }
+
 function endGame(){
   running = false;
-  finalScore.textContent = score;
+
+  // clear canvas and items
+  ctx.clearRect(0,0,W,H);
+  potatoes = [];
+
+  // hide canvas, hud and controls so only final overlay remains
+  const canvasEl = document.getElementById('game');
+  const controlsEl = document.getElementById('controls');
+  const hudEl = document.getElementById('hud');
+  const overlayEl = document.getElementById('overlay');
+
+  if(canvasEl) canvasEl.style.display = 'none';
+  if(controlsEl) controlsEl.style.display = 'none';
+  if(hudEl) hudEl.style.display = 'none';
+  if(overlayEl) overlayEl.style.display = 'none';
+
+  // prepare and insert the bat (big and still)
   finalHolder.innerHTML = '';
-  // clona e pausa sprite
-  const clone = batSprite.cloneNode(true);
-  clone.classList.add('still');
-  const wrap = document.createElement('div'); wrap.style.marginTop='12px'; wrap.appendChild(clone);
+  const spriteClone = batSprite.cloneNode(true);
+  spriteClone.classList.add('still');
+  // force inline style to ensure big size and no animation
+  spriteClone.style.transform = 'scale(5)';
+  spriteClone.style.left = '-160px';
+  spriteClone.style.top = '-160px';
+  spriteClone.style.animation = 'none';
+  const wrap = document.createElement('div');
+  wrap.style.width = '320px';
+  wrap.style.height = '320px';
+  wrap.style.display = 'flex';
+  wrap.style.alignItems = 'center';
+  wrap.style.justifyContent = 'center';
+  wrap.appendChild(spriteClone);
   finalHolder.appendChild(wrap);
-  endOverlay.classList.remove('hidden');
+
+  // show final overlay fullscreen and only it
+  endOverlay.classList.add('show');
+  endOverlay.setAttribute('aria-hidden','false');
+
+  // (optional) scroll to top to avoid mobile clipping
+  window.scrollTo(0,0);
 }
 
-/* impede scroll no jogo */
+/* prevent scroll while touching game */
 document.getElementById('game-wrap').addEventListener('touchmove', e=>{ e.preventDefault(); }, {passive:false});
 
-/* loop leve para atualizar posição do container se necessário */
+/* small loop to keep bat container pos in sync */
 (function smooth(){ updateBatPosition(); requestAnimationFrame(smooth); })();
+
+/* expose a replay action when user taps the overlay (optional) */
+endOverlay.addEventListener('click', ()=>{
+  // hide final overlay and show start overlay to allow replay
+  endOverlay.classList.remove('show');
+  endOverlay.setAttribute('aria-hidden','true');
+  overlay.classList.remove('hidden');
+  overlay.classList.remove('hidden'); // ensure visible
+  // reset and show hud/controls/canvas
+  document.getElementById('game').style.display = '';
+  document.getElementById('controls').style.display = '';
+  document.getElementById('hud').style.display = '';
+  resetGame();
+});
+
+/* safety: if user reloads, re-size and re-center bat */
+window.addEventListener('load', ()=>{ resize(); bat.x = window.innerWidth/2; bat.y = window.innerHeight*0.7; updateBatPosition(); });
 </script>
 </body>
 </html>
