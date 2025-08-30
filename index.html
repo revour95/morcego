@@ -30,9 +30,10 @@
     pointer-events:none;
     left:50%;
     top:50%;
+    overflow:visible; /* important to let the pixel-art extend outside */
   }
 
-  /* === START: compiled CodePen bat CSS (pixel-art via box-shadow) ===
+  /* === Compiled CodePen bat CSS (pixel-art via box-shadow) ===
      Variables resolved:
      $a -> #54556b
      $b -> #202020
@@ -43,13 +44,18 @@
   .bat {
     width: 1px;
     height: 1px;
-    transform: scale(4);
-    position: relative;
+    position: absolute;
     left: -128px;
     top: -128px;
+    transform: scale(4);
+    transform-origin: 0 0;
     animation: .4s bat steps(1) infinite;
+    z-index: 46;
+    pointer-events: none;
+    display:block;
   }
 
+  /* Bat animation (0% and 100% frames) */
   @keyframes bat {
     0% {
       box-shadow:
@@ -563,35 +569,69 @@
         46px 16px #202020,
         47px 16px #54556b,
         9px 17px #54556b,
-        10px 17px #54556b,
-        11px 17px #54556b,
+        10px 17px #202020,
+        11px 17px #202020,
         12px 17px #202020,
         13px 17px #202020,
         14px 17px #202020,
         15px 17px #202020,
         16px 17px #202020,
-        17px 17px #202020,
-        18px 17px #202020,
-        19px 17px #202020,
-        20px 17px #54556b,
-        36px 17px #54556b,
-        37px 17px #202020,
-        38px 17px #202020,
+        17px 17px #54556b,
+        37px 17px #54556b,
+        38px 17px #54556b,
         39px 17px #202020,
         40px 17px #202020,
         41px 17px #202020,
         42px 17px #202020,
-        43px 17px #202020;
+        43px 17px #202020,
+        44px 17px #202020,
+        45px 17px #202020,
+        46px 17px #202020,
+        47px 17px #202020,
+        48px 17px #54556b,
+        49px 17px #54556b,
+        51px 17px #54556b,
+        7px 18px #54556b,
+        8px 18px #54556b,
+        9px 18px #54556b,
+        10px 18px #202020,
+        11px 18px #202020,
+        12px 18px #202020,
+        13px 18px #202020,
+        14px 18px #202020,
+        15px 18px #202020,
+        16px 18px #202020,
+        17px 18px #54556b,
+        20px 18px #54556b,
+        37px 18px #54556b,
+        38px 18px #54556b,
+        39px 18px #202020,
+        40px 18px #202020,
+        41px 18px #202020,
+        42px 18px #202020,
+        43px 18px #202020,
+        44px 18px #202020,
+        45px 18px #202020,
+        46px 18px #202020,
+        47px 18px #202020,
+        48px 18px #54556b,
+        49px 18px #54556b,
+        51px 18px #202020,
+        7px 19px #54556b,
+        8px 19px #54556b,
+        9px 19px #54556b,
+        10px 19px #202020,
+        11px 19px #202020;
     }
   }
   /* === END compiled bat CSS === */
 
-  /* Controls: centered D-pad, lifted above bottom to avoid system nav overlap */
+  /* Controls styling */
   #controls{
     position:absolute;
     left:50%;
     transform:translateX(-50%);
-    bottom:92px; /* lift controls above system nav */
+    bottom:92px;
     z-index:50;
     display:grid;
     grid-template-columns:repeat(3,56px);
@@ -607,7 +647,6 @@
   #btn-left{grid-area:left}
   #btn-down{grid-area:down}
   #btn-right{grid-area:right}
-
   .ctrl-btn{width:56px;height:56px;border-radius:12px;background:rgba(255,255,255,0.03);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.04);user-select:none}
   .ctrl-btn:active{transform:scale(.98)}
   .ctrl-btn .arrow{font-size:22px;color:var(--text);font-weight:700;font-family:'Cinzel',serif;text-shadow:0 2px 0 rgba(0,0,0,.6)}
@@ -620,39 +659,23 @@
   .btn-primary{margin-top:12px;padding:8px 14px;border-radius:10px;background:var(--accent);color:#fff;border:none;font-weight:700;font-family:'Cinzel',serif}
   .hidden{display:none}
 
-  /* Fullscreen final overlay (initially hidden). When shown, will cover everything */
+  /* Final overlay */
   #endOverlay {
-    position:fixed;
-    left:0; top:0;
-    width:100vw; height:100vh;
-    z-index:9999;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    padding:24px;
-    box-sizing:border-box;
-    background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(10,0,0,0.97));
-    text-align:center;
+    position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:9999;
+    display:none; align-items:center; justify-content:center; flex-direction:column; padding:24px; box-sizing:border-box;
+    background:linear-gradient(180deg, rgba(0,0,0,0.98), rgba(10,0,0,0.97)); text-align:center;
   }
   #endOverlay.show { display:flex; }
   #endOverlay h1{ font-family:'UnifrakturCook',cursive;color:var(--accent);font-size:40px;margin:6px 0;text-shadow:0 6px 18px rgba(0,0,0,0.9) }
   #finalBatHolder{ margin-top:18px; display:flex; align-items:center; justify-content:center; }
-  #finalBatHolder .bat{ transform: none !important; } /* quando exibido no final, queremos o bat grande via svg ou escala diferente */
 
-  /* hide elements during end as safety */
-  .hidden-during-end { display:none !important; }
-
-  /* responsive tweaks */
   @media (max-width:420px){
     .bat-container{width:50px;height:50px}
-    .bat{transform:scale(4); left:-128px; top:-128px}
     #controls{bottom:84px; gap:8px}
     .ctrl-btn{width:50px;height:50px}
     #hud{font-size:22px}
     #hud .count{font-size:16px}
     #endOverlay h1{font-size:32px}
-    #finalBatHolder .bat svg{ width:260px; height:260px; }
   }
 </style>
 </head>
@@ -662,7 +685,7 @@
 
     <div id="hud"><span style="font-family:'UnifrakturCook',cursive">Batatas: </span> <span class="count" id="score">0</span></div>
 
-    <!-- bat sprite container: observe que a div .bat é vazia (como no CodePen) -->
+    <!-- bat sprite container: keep .bat empty as in CodePen -->
     <div class="bat-container" id="batContainer"><div class="bat" id="batSprite"></div></div>
 
     <!-- controls -->
@@ -717,6 +740,7 @@ resize();
 /* player */
 const bat = { x: W/2, y: H*0.7, w:56, h:56, speed:320 };
 function updateBatPosition(){
+  // center the container on bat.x/y
   batContainer.style.left = bat.x + 'px';
   batContainer.style.top  = bat.y + 'px';
 }
@@ -843,20 +867,16 @@ startBtn.addEventListener('click', ()=>{ overlay.classList.add('hidden'); startG
 
 function startGame(){
   score = 0; scoreEl.textContent = 0; potatoes = []; lastSpawn = performance.now(); running = true; lastTime = 0;
-  // make sure visible elements are visible
+  // make sure visible elements are visible (in case replay)
   document.getElementById('game').style.display = '';
   document.getElementById('controls').style.display = '';
   document.getElementById('hud').style.display = '';
+  // ensure final overlay hidden
   endOverlay.classList.remove('show');
   endOverlay.setAttribute('aria-hidden','true');
   // reset bat pos
   bat.x = W/2; bat.y = H*0.7; updateBatPosition();
   requestAnimationFrame(step);
-}
-
-function resetGame(){
-  score = 0; scoreEl.textContent = 0; potatoes = [];
-  bat.x = W/2; bat.y = H*0.7; updateBatPosition();
 }
 
 function endGame(){
@@ -877,25 +897,22 @@ function endGame(){
   if(hudEl) hudEl.style.display = 'none';
   if(overlayEl) overlayEl.style.display = 'none';
 
-  // prepare and insert a larger bat (clone the empty .bat and let CSS animate)
+  // prepare and insert a larger bat (clone the .bat but scale up)
   finalHolder.innerHTML = '';
-  const spriteClone = batSprite.cloneNode(true);
-  spriteClone.classList.add('still');
-  // override to show larger pixel-art: we'll create a temporary element using the same box-shadow technique,
-  // but because the original .bat is 1px scaled, placing it in a wrapper where it's visible is enough.
   const wrap = document.createElement('div');
   wrap.style.width = '320px';
   wrap.style.height = '320px';
   wrap.style.display = 'flex';
   wrap.style.alignItems = 'center';
   wrap.style.justifyContent = 'center';
-  // create a copy of the .bat but scaled up visually by increasing transform
+
   const bigBat = document.createElement('div');
   bigBat.className = 'bat';
-  bigBat.style.transform = 'scale(8)'; // bigger for final screen
+  bigBat.style.transform = 'scale(8)';
   bigBat.style.left = '-256px';
   bigBat.style.top = '-256px';
   bigBat.style.animation = 'none';
+  bigBat.style.position = 'relative';
   wrap.appendChild(bigBat);
   finalHolder.appendChild(wrap);
 
@@ -903,7 +920,6 @@ function endGame(){
   endOverlay.classList.add('show');
   endOverlay.setAttribute('aria-hidden','false');
 
-  // (optional) scroll to top to avoid mobile clipping
   window.scrollTo(0,0);
 }
 
@@ -913,9 +929,8 @@ document.getElementById('game-wrap').addEventListener('touchmove', e=>{ e.preven
 /* small loop to keep bat container pos in sync */
 (function smooth(){ updateBatPosition(); requestAnimationFrame(smooth); })();
 
-/* no replay on click: game ends at final overlay (user requested) */
+/* no replay on click */
 
-/* safety: if user reloads, re-size and re-center bat */
 window.addEventListener('load', ()=>{ resize(); bat.x = window.innerWidth/2; bat.y = window.innerHeight*0.7; updateBatPosition(); });
 </script>
 </body>
